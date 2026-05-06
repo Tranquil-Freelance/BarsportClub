@@ -1,0 +1,301 @@
+import time
+import random
+import logging
+import json
+from DrissionPage import ChromiumPage, ChromiumOptions
+from sqlalchemy import create_engine, text
+
+# ==========================================
+# CONFIGURAZIONE TURBO
+# ==========================================
+DB_URI = "postgresql://postgres:password@localhost:5432/xpalermostat"
+engine = create_engine(DB_URI)
+
+TARGET_LEAGUES = ['Serie_A', 'EPL', 'La_liga', 'Bundesliga', 'Ligue_1']
+TARGET_SEASONS = ['2025', '2024', '2023', '2022', '2021']
+
+# ⚡ TURBO MODE: 2-3 secondi
+JITTER_MIN = 2.0
+JITTER_MAX = 3.0
+HIBERNATION_PERIOD = 1800
+BATCH_SIZE = 20
+MAX_RETRIES = 3
+RETRY_DELAY = 5
+
+
+def safe_float(val):
+    try:
+        return float(val) if val is not None else 0.0
+    except Exception:
+        return 0.0
+
+
+def safe_int(val):
+    try:
+        return int(val) if val is not None else 0
+    except Exception:
+        return 0
+
+
+def get_ppda(p):
+    if not p:
+        return 0.0
+    att = safe_float(p.get('att'))
+    df = safe_float(p.get('def'))
+    return att / df if df > 0 else 0.0
+
+
+def build_matchdays_dict(dates_list):
+    sorted_matches = sorted(dates_list, key=lambda x: x.get('datetime', ''))
+    team_games = {}
+    match_rounds = {}
+    for m in sorted_matches:
+        if not m.get('datetime'):
+            continue
+        h_id = str(m['h']['id'])
+        a_id = str(m['a']['id'])
+        team_games[h_id] = team_games.get(h_id, 0) + 1
+        team_games[a_id] = team_games.get(a_id, 0) + 1
+        round_num = max(team_games[h_id], team_games[a_id])
+        match_rounds[int(m['id'])] = round_num
+    return match_rounds
+
+
+def make_page() -> ChromiumPage:
+    """✅ FIX: Configurazione nativa DrissionPage (niente sintassi Selenium)"""
+    co = ChromiumOptions()
+    co.headless(True)
+    co.set_argument('--no-sandbox')
+    co.set_argument('--disable-dev-shm-usage')
+    co.set_argument('--disable-gpu')
+    co.set_argument('--disable-blink-features=AutomationControlled')
+    co.set_user_agent(
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+        '(KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36'
+    )
+    return ChromiumPage(co)
+
+
+def scrape_match_turbo(page: ChromiumPage, match_id: int, retry=0) -> dict:
+    """⚡ TURBO: Scraping ultra-veloce con retry"""
+    try:
+        page.get(f"https://understat.com/match/{match_id}")
+        
+        if "too many requests" in page.html.lower() or "429" in page.html:
+            raise Exception("RATE_LIMIT")
+        
+        page.scroll.down(200)
+        time.sleep(0.5)
+        
+        raw_json = page.run_js("""
+            if(typeof window.shotsData !== 'undefined' && typeof window.rostersData !== 'undefined'){
+                return JSON.stringify({s: window.shotsData, r: window.rostersData});
+            }
+            return null;
+        """)
+        
+        if not raw_json:
+            if retry < MAX_RETRIES:
+                logging.warning(f"⚠️ Match {match_id}: Retry {retry+1}/{MAX_RETRIES}")
+                time.sleep(RETRY_DELAY)
+                return scrape_match_turbo(page, match_id, retry + 1)
+            return None
+        
+        return json.loads(raw_json)
+        
+    except Exception as e:
+        if "RATE_LIMIT" in str(e):
+            raise
+        if retry < MAX_RETRIES:
+            time.sleep(RETRY_DELAY)
+            return scrape_match_turbo(page, match_id, retry + 1)
+        logging.error(f"❌ Match {match_id} fallito dopo {MAX_RETRIES} tentativi")
+        return None
+
+
+def save_match_data(conn, match_id: int, m_json: dict):
+    """Salva dati match nel DB"""
+    with conn.begin():
+        conn.execute(text("DELETE FROM shots WHERE match_id = :id"), {"id": match_id})
+        conn.execute(text("DELETE FROM rosters WHERE match_id = :id"), {"id": match_id})
+
+        for side in ['h', 'a']:
+            for s in m_json['s'].get(side, []):
+                conn.execute(text("""
+                    INSERT INTO shots (match_id, player_id, player, minute, "xG", "X", "Y",
+                                       result, team_type, situation, "shotType", "lastAction", player_assisted)
+                    VALUES (:m_id, :p_id, :p, :min, :xg, :x, :y, :res, :side, :sit, :st, :la, :assisted)
+                    ON CONFLICT (match_id, player, minute) DO NOTHING
+                """), {
+                    "m_id": match_id, "p_id": safe_int(s.get('player_id')),
+                    "p": s.get('player'), "min": safe_int(s.get('minute')),
+                    "xg": safe_float(s.get('xG')), "x": safe_float(s.get('X')),
+                    "y": safe_float(s.get('Y')), "res": s.get('result'),
+                    "side": 'home' if side == 'h' else 'away',
+                    "sit": s.get('situation'), "st": s.get('shotType'),
+                    "la": s.get('lastAction'), "assisted": s.get('player_assisted')
+                })
+
+            for r in m_json['r'].get(side, {}).values():
+                conn.execute(text("""
+                    INSERT INTO rosters (match_id, player_id, player, position, "time",
+                                         goals, assists, shots, key_passes, "xG", "xA",
+                                         "xGChain", "xGBuildup", yellow_card, red_card, team_type)
+                    VALUES (:m_id, :p_id, :p, :pos, :t, :g, :as, :sh, :kp, :xg, :xa,
+                            :xgc, :xgb, :yc, :rc, :team_type)
+                    ON CONFLICT (match_id, player_id) DO NOTHING
+                """), {
+                    "m_id": match_id, "p_id": safe_int(r.get('player_id')),
+                    "p": r.get('player'), "pos": r.get('position'),
+                    "t": safe_int(r.get('time')), "g": safe_int(r.get('goals')),
+                    "as": safe_int(r.get('assists')), "sh": safe_int(r.get('shots')),
+                    "kp": safe_int(r.get('key_passes')), "xg": safe_float(r.get('xG')),
+                    "xa": safe_float(r.get('xA')), "xgc": safe_float(r.get('xGChain')),
+                    "xgb": safe_float(r.get('xGBuildup')),
+                    "yc": safe_int(r.get('yellow_cards') or r.get('yellow')),
+                    "rc": safe_int(r.get('red_cards') or r.get('red')),
+                    "team_type": r.get('h_a')
+                })
+
+        conn.execute(text("UPDATE matchcalendar SET is_scraped = TRUE WHERE id = :id"), {"id": match_id})
+
+
+def sync_turbo_mode():
+    """⚡⚡ TURBO MODE - MASSIMA VELOCITÀ ⚡⚡"""
+    logging.info("🚀🚀 TURBO MODE ACTIVATED (2-3s delay) 🚀")
+    logging.warning("️ ATTENZIONE: Rischio ban aumentato. Monitora gli errori!")
+    
+    page = make_page()
+    total_processed = 0
+    total_errors = 0
+
+    for season in TARGET_SEASONS:
+        logging.info(f"\n🟢 STAGIONE: {season}")
+        for league in TARGET_LEAGUES:
+            time.sleep(random.uniform(JITTER_MIN, JITTER_MAX))
+            
+            try:
+                page.get(f"https://understat.com/league/{league}/{season}")
+                
+                if "too many requests" in page.html.lower():
+                    logging.error("🚨 BAN! Ibernazione 30 minuti...")
+                    time.sleep(HIBERNATION_PERIOD)
+                    page.get(f"https://understat.com/league/{league}/{season}")
+
+                page.scroll.down(300)
+                time.sleep(0.5)
+
+                raw_json = page.run_js("""
+                    if(typeof window.teamsData !== 'undefined' && typeof window.datesData !== 'undefined'){
+                        return JSON.stringify({t: window.teamsData, d: window.datesData});
+                    }
+                    return null;
+                """)
+
+                if not raw_json:
+                    logging.warning(f"⚠️ Skip {league} {season}")
+                    continue
+
+                league_data = json.loads(raw_json)
+                teams_dict = league_data['t']
+                dates_list = league_data['d']
+                match_rounds = build_matchdays_dict(dates_list)
+                
+                matches_todo = []
+                with engine.connect() as conn:
+                    for m in dates_list:
+                        if m.get('isResult'):
+                            m_id = int(m['id'])
+                            row = conn.execute(
+                                text("SELECT is_scraped FROM matchcalendar WHERE id = :id"),
+                                {"id": m_id}
+                            ).fetchone()
+                            if not row or not row[0]:
+                                matches_todo.append(m)
+
+                if not matches_todo:
+                    logging.info(f"✅ {league} {season}: OK")
+                    continue
+
+                logging.info(f"📊 {league} {season}: {len(matches_todo)} match")
+
+                with engine.begin() as conn:
+                    for m in matches_todo:
+                        m_id = int(m['id'])
+                        h_id, a_id = str(m['h']['id']), str(m['a']['id'])
+                        h_stats = next((h for h in teams_dict.get(h_id, {}).get('history', []) 
+                                       if h['date'] == m['datetime']), {})
+                        a_stats = next((h for h in teams_dict.get(a_id, {}).get('history', []) 
+                                       if h['date'] == m['datetime']), {})
+                        
+                        conn.execute(text("""
+                            UPDATE matchcalendar SET
+                                home_goals = :hg, away_goals = :ag,
+                                "home_xG" = :hxg, "away_xG" = :axg,
+                                home_ppda = :hpp, away_ppda = :app,
+                                home_deep = :hd, away_deep = :ad,
+                                "home_xpts" = :hxp, "away_xpts" = :axp,
+                                matchday = :md, is_completed = TRUE
+                            WHERE id = :id
+                        """), {
+                            "id": m_id, "md": match_rounds.get(m_id, 0),
+                            "hg": safe_int(m.get('goals', {}).get('h')),
+                            "ag": safe_int(m.get('goals', {}).get('a')),
+                            "hxg": safe_float(m.get('xG', {}).get('h')),
+                            "axg": safe_float(m.get('xG', {}).get('a')),
+                            "hpp": get_ppda(h_stats.get('ppda')),
+                            "app": get_ppda(a_stats.get('ppda')),
+                            "hd": safe_int(h_stats.get('deep')),
+                            "ad": safe_int(a_stats.get('deep')),
+                            "hxp": safe_float(h_stats.get('xpts')),
+                            "axp": safe_float(a_stats.get('xpts')),
+                        })
+
+                batch = []
+                for idx, m in enumerate(matches_todo, 1):
+                    m_id = int(m['id'])
+                    
+                    try:
+                        m_json = scrape_match_turbo(page, m_id)
+                        if m_json:
+                            batch.append((m_id, m_json))
+                            total_processed += 1
+                        
+                        if len(batch) >= BATCH_SIZE:
+                            with engine.begin() as conn:
+                                for bid, bjson in batch:
+                                    save_match_data(conn, bid, bjson)
+                            batch = []
+                            logging.info(f"💾 Batch {idx//BATCH_SIZE} salvato")
+                        
+                        time.sleep(random.uniform(JITTER_MIN, JITTER_MAX))
+                        
+                        if idx % 20 == 0:
+                            logging.info(f"📈 [{idx}/{len(matches_todo)}] Processati: {total_processed}")
+                    
+                    except Exception as e:
+                        if "RATE_LIMIT" in str(e):
+                            logging.error("🚨 RATE LIMIT! Pausa 30 min...")
+                            time.sleep(HIBERNATION_PERIOD)
+                        total_errors += 1
+
+                if batch:
+                    with engine.begin() as conn:
+                        for bid, bjson in batch:
+                            save_match_data(conn, bid, bjson)
+
+            except Exception as e:
+                logging.error(f"❌ Errore {league} {season}: {e}", exc_info=True)
+                total_errors += 1
+
+    page.quit()
+    logging.info(f"\n✅ COMPLETATO! Successi: {total_processed}, Errori: {total_errors}")
+
+
+if __name__ == "__main__":
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s [%(levelname)s] %(message)s',
+        datefmt='%H:%M:%S'
+    )
+    sync_turbo_mode()

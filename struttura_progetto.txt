@@ -1,0 +1,1158 @@
+﻿├── .claude
+│   └── settings.local.json
+├── .superpowers
+│   └── brainstorm
+│       ├── 1374-1777037656
+│       │   ├── content
+│       │   │   ├── design-directions.html
+│       │   │   ├── optical-editorial-final.html
+│       │   │   ├── optical-editorial-v2.html
+│       │   │   └── optical-editorial.html
+│       │   └── state
+│       │       ├── server-stopped
+│       │       └── server.pid
+│       ├── 1802-1776930822
+│       │   ├── content
+│       │   │   ├── section3-table-ui.html
+│       │   │   └── section3-table-v2.html
+│       │   └── state
+│       │       ├── server-info
+│       │       ├── server-stopped
+│       │       └── server.pid
+│       ├── 2027-1776927353
+│       │   ├── content
+│       │   │   ├── league-selector-layout.html
+│       │   │   ├── section3-table-ui.html
+│       │   │   └── waiting-1.html
+│       │   └── state
+│       │       ├── server-stopped
+│       │       └── server.pid
+│       └── 679-1777280265
+│           ├── content
+│           │   ├── h2h-radar-style.html
+│           │   ├── talent-radar-layout.html
+│           │   ├── waiting-1.html
+│           │   └── waiting-2.html
+│           └── state
+│               ├── server-stopped
+│               └── server.pid
+├── backend
+│   ├── .claude
+│   │   └── settings.local.json
+│   ├── api
+│   │   ├── players.py
+│   │   ├── scraper_routes.py
+│   │   └── __init__.py
+│   ├── app
+│   │   ├── api
+│   │   │   ├── v1
+│   │   │   │   ├── endpoints
+│   │   │   │   │   ├── players.py
+│   │   │   │   │   ├── rankings.py
+│   │   │   │   │   ├── scraper.py
+│   │   │   │   │   ├── statistics.py
+│   │   │   │   │   ├── teams.py
+│   │   │   │   │   ├── team_metrics.py
+│   │   │   │   │   ├── team_performance.py
+│   │   │   │   │   └── __init__.py
+│   │   │   │   ├── api.py
+│   │   │   │   └── __init__.py
+│   │   │   ├── ai_editor.py
+│   │   │   ├── analytics.py
+│   │   │   ├── crud.py
+│   │   │   ├── endpoints.py
+│   │   │   ├── fanta_routes.py
+│   │   │   ├── meritometro.py
+│   │   │   ├── nerdzone_routes.py
+│   │   │   ├── scout_routes.py
+│   │   │   ├── scraper_routes.py
+│   │   │   └── __init__.py
+│   │   ├── core
+│   │   │   ├── config.py
+│   │   │   └── __init__.py
+│   │   ├── db
+│   │   │   ├── base_class.py
+│   │   │   ├── database.py
+│   │   │   ├── models.py
+│   │   │   ├── session.py
+│   │   │   └── __init__.py
+│   │   ├── models
+│   │   │   ├── football.py
+│   │   │   ├── stats.py
+│   │   │   └── __init__.py
+│   │   ├── schemas
+│   │   │   ├── football.py
+│   │   │   ├── statistics.py
+│   │   │   └── __init__.py
+│   │   ├── scraper
+│   │   │   ├── data_cleaner.py
+│   │   │   ├── live_match_scraper.py
+│   │   │   ├── sniper_protocol.py
+│   │   │   ├── sync_calendar.py
+│   │   │   ├── understat.py
+│   │   │   ├── understat_engine.py
+│   │   │   ├── understat_parser.py
+│   │   │   └── __init__.py
+│   │   ├── services
+│   │   │   ├── db_ingestion.py
+│   │   │   ├── metrics_engine.py
+│   │   │   ├── understat_service.py
+│   │   │   └── __init__.py
+│   │   ├── tasks
+│   │   │   ├── updater.py
+│   │   │   └── __init__.py
+│   │   ├── INSTRUCTIONS_FOR_ROO.md
+│   │   └── __init__.py
+│   ├── archive
+│   │   └── debug_legacy
+│   │       ├── api_response.json
+│   │       ├── api_team.json
+│   │       ├── check_all_rows.py
+│   │       ├── check_all_seasons.py
+│   │       ├── check_columns.py
+│   │       ├── check_counts.py
+│   │       ├── check_db.py
+│   │       ├── check_db_report.py
+│   │       ├── check_duplicates.py
+│   │       ├── check_inf.py
+│   │       ├── check_leagues.py
+│   │       ├── check_match.py
+│   │       ├── check_matchcalendar.py
+│   │       ├── check_matchcalendar_columns.py
+│   │       ├── check_matches.py
+│   │       ├── check_matches_api.py
+│   │       ├── check_matches_columns.py
+│   │       ├── check_matches_count.py
+│   │       ├── check_matches_teams.py
+│   │       ├── check_match_29.py
+│   │       ├── check_match_teams.py
+│   │       ├── check_nan.py
+│   │       ├── check_nan_calendar.py
+│   │       ├── check_nan_matches.py
+│   │       ├── check_nan_shots.py
+│   │       ├── check_raw_shots.py
+│   │       ├── check_round.py
+│   │       ├── check_round_details.py
+│   │       ├── check_round_null.py
+│   │       ├── check_scraped_match.py
+│   │       ├── check_seasons.py
+│   │       ├── check_shots.py
+│   │       ├── check_shots_structure.py
+│   │       ├── check_shots_structure2.py
+│   │       ├── check_teams.py
+│   │       ├── check_values.py
+│   │       ├── check_xpts.py
+│   │       ├── debug_500.py
+│   │       ├── debug_endpoint.py
+│   │       ├── debug_html.py
+│   │       ├── debug_output.html
+│   │       ├── debug_output.txt
+│   │       ├── debug_scraper.py
+│   │       ├── debug_scraper2.py
+│   │       ├── debug_serialization.py
+│   │       ├── debug_shots.py
+│   │       ├── debug_shotsdata.py
+│   │       ├── debug_understat.py
+│   │       ├── league.html
+│   │       ├── matches_limit5.json
+│   │       ├── match_27362.json
+│   │       ├── playerradar.json
+│   │       ├── response.txt
+│   │       ├── search.html
+│   │       ├── serie_a_understat.json
+│   │       ├── server.log
+│   │       ├── shotmap.json
+│   │       ├── team.html
+│   │       ├── test_all_endpoints.py
+│   │       ├── test_api.py
+│   │       ├── test_api_direct.py
+│   │       ├── test_api_response.py
+│   │       ├── test_api_shots.py
+│   │       ├── test_como_ids.py
+│   │       ├── test_crud_matches.py
+│   │       ├── test_endpoint.py
+│   │       ├── test_endpoint_27362.py
+│   │       ├── test_endpoint_detailed.py
+│   │       ├── test_endpoint_with_headers.py
+│   │       ├── test_engine.py
+│   │       ├── test_engine2.py
+│   │       ├── test_fbref.py
+│   │       ├── test_fbref2.py
+│   │       ├── test_frontend_parsing.py
+│   │       ├── test_latest_round.py
+│   │       ├── test_league_data.py
+│   │       ├── test_match.py
+│   │       ├── test_match2.py
+│   │       ├── test_matches.py
+│   │       ├── test_match_ids.py
+│   │       ├── test_match_page.py
+│   │       ├── test_new_endpoint.py
+│   │       ├── test_new_endpoint2.py
+│   │       ├── test_one_match.py
+│   │       ├── test_post_shots.py
+│   │       ├── test_post_shots2.py
+│   │       ├── test_regex.py
+│   │       ├── test_response.json
+│   │       ├── test_round.py
+│   │       ├── test_route.py
+│   │       ├── test_scrape.py
+│   │       ├── test_scraper.py
+│   │       ├── test_scraper_functional.py
+│   │       ├── test_scraper_import.py
+│   │       ├── test_scrape_27362.py
+│   │       ├── test_scrape_endpoint.py
+│   │       ├── test_serieb.py
+│   │       ├── test_shots.py
+│   │       ├── test_shots_api.py
+│   │       ├── test_shots_engine.py
+│   │       ├── test_soccerdata_engine.py
+│   │       ├── test_standings.py
+│   │       ├── test_status.py
+│   │       ├── test_surgical_scrape.py
+│   │       ├── test_understat.py
+│   │       ├── test_understat2.py
+│   │       ├── test_understat_api.py
+│   │       ├── test_unification.py
+│   │       └── xgscatter.json
+│   ├── core
+│   │   └── scrapers
+│   │       ├── broad_scan.py
+│   │       ├── download_serie_a_playwright.py
+│   │       ├── download_serie_a_understat.py
+│   │       ├── extract_ids_team.py
+│   │       ├── extract_json_vars.py
+│   │       ├── extract_json_vars2.py
+│   │       ├── extract_matchdata.py
+│   │       ├── extract_match_ids.py
+│   │       ├── extract_shots.py
+│   │       ├── extract_team_data.py
+│   │       ├── extract_team_matches.py
+│   │       ├── extract_tokens.py
+│   │       ├── extract_variables.py
+│   │       ├── extract_vars.py
+│   │       ├── fbref_columns.py
+│   │       ├── fbref_explore.py
+│   │       ├── fetch_como_ids_live.py
+│   │       ├── fetch_como_matches.py
+│   │       ├── fetch_datesdata.py
+│   │       ├── fetch_match_id.py
+│   │       ├── fetch_match_js.py
+│   │       ├── fetch_match_title.py
+│   │       ├── fetch_shots_api.py
+│   │       ├── fetch_team_2024.py
+│   │       ├── fetch_team_matches.py
+│   │       ├── find_como.py
+│   │       ├── find_correct_endpoint.py
+│   │       ├── find_match.py
+│   │       ├── find_match_id.py
+│   │       ├── find_urls.py
+│   │       ├── find_valid_match.py
+│   │       ├── find_valid_match2.py
+│   │       ├── find_variables.py
+│   │       ├── get_match_id.py
+│   │       ├── get_match_ids.py
+│   │       ├── guess_endpoints.py
+│   │       ├── import_seriea_shots.py
+│   │       ├── import_understat_match.py
+│   │       ├── inject_seriea.py
+│   │       ├── inspect_fbref.py
+│   │       ├── inspect_getdata.py
+│   │       ├── inspect_history.py
+│   │       ├── inspect_html.py
+│   │       ├── inspect_page.py
+│   │       ├── inspect_round.py
+│   │       ├── inspect_shots.py
+│   │       ├── inspect_understat.py
+│   │       ├── inspect_urls.py
+│   │       ├── list_all_routes.py
+│   │       ├── list_leagues.py
+│   │       ├── list_routes.py
+│   │       ├── list_tables.py
+│   │       ├── list_tables2.py
+│   │       ├── parse_league.py
+│   │       ├── parse_team.py
+│   │       ├── quick_scan.py
+│   │       ├── quick_scan2.py
+│   │       ├── rebuild_and_import.py
+│   │       ├── run_latest_scrape.py
+│   │       ├── sample_seriea.py
+│   │       ├── scan_como.py
+│   │       ├── scan_como2.py
+│   │       ├── scan_como_range.py
+│   │       ├── scheduler.py
+│   │       ├── search_api.py
+│   │       ├── search_como_matches.py
+│   │       ├── search_js.py
+│   │       ├── search_progressive.py
+│   │       ├── search_serieb.py
+│   │       ├── search_shotsdata.py
+│   │       ├── search_variables.py
+│   │       ├── smart_scraper.py
+│   │       ├── sync_matches_fixed.py
+│   │       ├── sync_matches_from_calendar.py
+│   │       ├── sync_serie_a_2025.py
+│   │       ├── temp_cleaner.py
+│   │       ├── temp_columns.py
+│   │       ├── temp_columns2.py
+│   │       ├── temp_extract_30116.py
+│   │       ├── temp_inspect.py
+│   │       ├── temp_scrape.py
+│   │       └── total_scraper.py
+│   ├── html_imports
+│   │   ├── bundesliga_2020.json
+│   │   ├── bundesliga_2021.json
+│   │   ├── bundesliga_2022.json
+│   │   ├── bundesliga_2023.json
+│   │   ├── bundesliga_2024.json
+│   │   ├── dbeaver-ce-26.0.1-windows-x86_64.exe
+│   │   ├── laliga_2020.json
+│   │   ├── laliga_2021.json
+│   │   ├── laliga_2022.json
+│   │   ├── laliga_2023.json
+│   │   ├── laliga_2024.json
+│   │   ├── ligue1_2020.json
+│   │   ├── ligue1_2021.json
+│   │   ├── ligue1_2022.json
+│   │   ├── ligue1_2023.json
+│   │   ├── ligue1_2024.json
+│   │   ├── pitchlogix_tiri_seriea.json
+│   │   ├── premier_2020.json
+│   │   ├── premier_2021.json
+│   │   ├── premier_2022.json
+│   │   ├── premier_2023.json
+│   │   ├── premier_2024.json
+│   │   ├── seriea_2020.json
+│   │   ├── seriea_2021.json
+│   │   ├── seriea_2022.json
+│   │   ├── seriea_2023.json
+│   │   ├── seriea_2024.json
+│   │   └── seriea_2025.json
+│   ├── imports
+│   │   ├── Cagliari 1 - 2 Como_files
+│   │   │   ├── alasql.min.js.download
+│   │   │   ├── Chart.min.js.download
+│   │   │   ├── jquery-1.12.4.min.js.download
+│   │   │   ├── jquery-ui.min.js.download
+│   │   │   ├── jquery.iframetracker.min.js.download
+│   │   │   ├── jquery.mousewheel.min.js.download
+│   │   │   ├── jTable.min.js.download
+│   │   │   ├── main.min.css
+│   │   │   ├── main.min.js.download
+│   │   │   ├── match.min.js.download
+│   │   │   ├── modernizr.min.js.download
+│   │   │   ├── pagination.min.js.download
+│   │   │   ├── select.min.js.download
+│   │   │   ├── simplebar.min.js.download
+│   │   │   ├── timsort.min.js.download
+│   │   │   ├── tooltip.min.js.download
+│   │   │   ├── typeahead.bundle.min.js.download
+│   │   │   ├── webfont.js.download
+│   │   │   └── xlsx.core.min.js.download
+│   │   ├── Cagliari 1 - 2 Como.html
+│   │   └── shots_30116.json
+│   ├── migrations
+│   │   └── 001_add_performance_indexes.sql
+│   ├── scrapers
+│   │   ├── palermo_full_season.py
+│   │   ├── soccerdata_engine.py
+│   │   ├── understat.py
+│   │   ├── understat_lib.py
+│   │   ├── understat_scraper.py
+│   │   └── __init__.py
+│   ├── scripts
+│   │   ├── aggiornamento_bundes.py
+│   │   ├── audit_dati.py
+│   │   ├── build_master_view.py
+│   │   ├── calcola_medie.py
+│   │   ├── check_view_type.py
+│   │   ├── convert_view_to_table.py
+│   │   ├── count_shots.py
+│   │   ├── crea_anagrafica.py
+│   │   ├── crea_master_europa.py
+│   │   ├── debug_shots.py
+│   │   ├── extract_match.py
+│   │   ├── import_match_html.py
+│   │   ├── import_raw_json.py
+│   │   ├── match_sniper.py
+│   │   ├── premier_scraper.py
+│   │   ├── scraper_bundesliga.py
+│   │   ├── scraper_laliga.py
+│   │   ├── scraper_ligue1.py
+│   │   ├── scraper_seriea.py
+│   │   ├── scrape_match_results.py
+│   │   ├── scrape_match_shots.py
+│   │   ├── sync_understat.py
+│   │   └── test_connection.py
+│   ├── Serie A xG Table and Scorers for the 2025_2026 season _ Understat.com_files
+│   │   ├── alasql.min.js.download
+│   │   ├── calendar.min.js.download
+│   │   ├── Chart.min.js.download
+│   │   ├── date.format.min.js.download
+│   │   ├── datepicker.min.js.download
+│   │   ├── jquery-1.12.4.min.js.download
+│   │   ├── jquery-ui.min.js.download
+│   │   ├── jquery.iframetracker.min.js.download
+│   │   ├── jquery.mousewheel.min.js.download
+│   │   ├── jTable.min.js.download
+│   │   ├── league.min.js.download
+│   │   ├── main.min.css
+│   │   ├── main.min.js.download
+│   │   ├── modernizr.min.js.download
+│   │   ├── pagination.min.js.download
+│   │   ├── select.min.js.download
+│   │   ├── simplebar.min.js.download
+│   │   ├── timsort.min.js.download
+│   │   ├── tooltip.min.js.download
+│   │   ├── typeahead.bundle.min.js.download
+│   │   ├── webfont.js.download
+│   │   └── xlsx.core.min.js.download
+│   ├── .env
+│   ├── .env.example
+│   ├── add_missing_columns.py
+│   ├── add_missing_columns_matches.py
+│   ├── add_round_column.py
+│   ├── add_unification_columns.py
+│   ├── add_xpts_column.py
+│   ├── add_xpts_column2.py
+│   ├── aggiorna_db.py
+│   ├── aggiusta_tabelle.py
+│   ├── alter_shots.py
+│   ├── backup_full_scout.sql
+│   ├── batch_injector.py
+│   ├── check_columns.py
+│   ├── check_columns2.py
+│   ├── check_columns3.py
+│   ├── check_default_db.py
+│   ├── check_existing_subs.py
+│   ├── check_match_data.py
+│   ├── check_player_in_ids.py
+│   ├── check_player_registry.py
+│   ├── check_positions.py
+│   ├── check_subs.py
+│   ├── check_subs_schema.py
+│   ├── check_sub_2024.py
+│   ├── check_team_data.py
+│   ├── check_team_name.py
+│   ├── check_tiri.py
+│   ├── chi_sono.py
+│   ├── clean_db.py
+│   ├── clean_nan.py
+│   ├── conta_match.py
+│   ├── costruisci_db.py
+│   ├── count_matches_by_league.py
+│   ├── count_shots.py
+│   ├── create_football_tables.py
+│   ├── create_substitutions_table.py
+│   ├── create_tables.py
+│   ├── debug_asyncpg_schema.py
+│   ├── debug_comunicazione.py
+│   ├── debug_match_lineup_data.py
+│   ├── debug_match_output.html
+│   ├── debug_page.html
+│   ├── debug_timeout.html
+│   ├── decode_match_info.py
+│   ├── delete_mock_rows.py
+│   ├── delete_mock_rows2.py
+│   ├── delete_remaining_mock.py
+│   ├── delete_remaining_mock2.py
+│   ├── Dockerfile
+│   ├── engine_barsport.py
+│   ├── ensure_tables.py
+│   ├── error_page.html
+│   ├── espandi_calendario.py
+│   ├── europa_full_harvester.py
+│   ├── explore_db.py
+│   ├── explore_db2.py
+│   ├── explore_db3.py
+│   ├── final_test.py
+│   ├── find_player_mapping.py
+│   ├── firefox_fail.png
+│   ├── fix_future_dates.py
+│   ├── fix_missing_goals.py
+│   ├── fix_null_rounds.py
+│   ├── fix_teams.py
+│   ├── fix_team_names.py
+│   ├── force_db_fix.py
+│   ├── force_fix_db.py
+│   ├── forza_partita.py
+│   ├── get_first_match.py
+│   ├── get_first_match_sqlite.py
+│   ├── global_update.py
+│   ├── init_como_data_fixed.py
+│   ├── init_new_tables.py
+│   ├── insert_static_match.py
+│   ├── insert_test_match.py
+│   ├── insert_test_match2.py
+│   ├── insert_test_match_calendar.py
+│   ├── ispeziona_db.py
+│   ├── lista_squadre.py
+│   ├── list_columns.py
+│   ├── list_tables.py
+│   ├── main.py
+│   ├── meritometro_ai.py
+│   ├── migrate_substitutions.py
+│   ├── players.csv
+│   ├── populate_10_matches.py
+│   ├── populate_player_in.py
+│   ├── prova
+│   ├── prova2
+│   ├── prova2.py
+│   ├── prova3.py
+│   ├── prova4.py
+│   ├── pulisci_db.py
+│   ├── purge_mock_data.py
+│   ├── query_existing_matches.py
+│   ├── query_existing_shots.py
+│   ├── query_match.py
+│   ├── recupero_serie_a.py
+│   ├── replacement_engine.py
+│   ├── requirements.txt
+│   ├── reset_scraped.py
+│   ├── reset_seriea.py
+│   ├── riconcilia.py
+│   ├── rimuovi_vincolo.py
+│   ├── run_sync_2025.py
+│   ├── scheduler.py
+│   ├── scoutengine.py
+│   ├── scrapermassivo.py
+│   ├── scraper_storico.py
+│   ├── scraper_ultime_giornate.py
+│   ├── scraping_definitivo
+│   ├── scraping_manuale.py
+│   ├── seed_standings.py
+│   ├── Serie A xG Table and Scorers for the 2025_2026 season _ Understat.com.html
+│   ├── seriea_deep_data_2025_FIXED.json
+│   ├── seriea_deep_data_2025_PARZIALE.json
+│   ├── serie_a_2025_FULL.db
+│   ├── serie_a_24_25_base.db
+│   ├── serie_a_24_25_FULL.db
+│   ├── server_log.txt
+│   ├── sync_giornate.py
+│   ├── test_async_sub.py
+│   ├── test_emergenza.py
+│   ├── test_lineup_fix.py
+│   ├── test_merito.py
+│   ├── test_mvgi.py
+│   ├── test_player.py
+│   ├── test_query.py
+│   ├── test_report.py
+│   ├── test_sync.py
+│   ├── test_tubature.py
+│   ├── trigger_sync.py
+│   ├── turbo_scraper.py
+│   ├── update_rounds.py
+│   ├── update_rounds_epl.py
+│   ├── update_stats.py
+│   ├── validate_matches.py
+│   ├── verify_counts.py
+│   ├── verify_data.py
+│   ├── verify_query.py
+│   ├── verify_serie_a.py
+│   ├── verify_stats.py
+│   ├── verify_understat_sync.py
+│   └── __init__.py
+├── deploy
+│   ├── barsport.service
+│   └── setup_vps.sh
+├── docs
+│   └── superpowers
+│       ├── plans
+│       │   ├── 2026-04-20-automated-scraper.md
+│       │   ├── 2026-04-20-barsport-4fix.md
+│       │   ├── 2026-04-20-fanta-draft.md
+│       │   ├── 2026-04-20-nerd-zone.md
+│       │   ├── 2026-04-23-fanta-draft-multi-league.md
+│       │   └── 2026-04-24-homepage-optical-editorial.md
+│       └── specs
+│           ├── 2026-04-20-automated-scraper-design.md
+│           ├── 2026-04-20-barsport-fixes-design.md
+│           ├── 2026-04-23-fanta-draft-refactor-design.md
+│           ├── 2026-04-24-homepage-optical-editorial-design.md
+│           └── 2026-04-27-scout-engine-overhaul-design.md
+├── frontend
+│   ├── .claude
+│   │   └── settings.local.json
+│   ├── app
+│   │   ├── admin
+│   │   │   ├── editor
+│   │   │   │   └── page.tsx
+│   │   │   ├── scraper
+│   │   │   │   └── page.tsx
+│   │   │   ├── AdminHeader.tsx
+│   │   │   ├── AdminSidebar.tsx
+│   │   │   ├── layout.tsx
+│   │   │   └── page.tsx
+│   │   ├── analytics
+│   │   │   └── page.tsx
+│   │   ├── api
+│   │   │   ├── admin
+│   │   │   │   └── scrape-latest
+│   │   │   │       └── route.ts
+│   │   │   └── scraper
+│   │   │       └── run
+│   │   │           └── route.ts
+│   │   ├── article
+│   │   │   └── [slug]
+│   │   ├── atalanta
+│   │   │   └── page.tsx
+│   │   ├── betting
+│   │   │   └── page.tsx
+│   │   ├── blog
+│   │   │   ├── [slug]
+│   │   │   └── page.tsx
+│   │   ├── bundesliga
+│   │   │   ├── match
+│   │   │   │   └── [id]
+│   │   │   └── page.tsx
+│   │   ├── campionati
+│   │   │   └── page.tsx
+│   │   ├── como
+│   │   │   └── page.tsx
+│   │   ├── components
+│   │   │   ├── admin
+│   │   │   │   ├── DatabaseStatus.tsx
+│   │   │   │   ├── ExerciseForm.tsx
+│   │   │   │   └── ScraperPanel.tsx
+│   │   │   ├── blog
+│   │   │   │   ├── ArticleCard.tsx
+│   │   │   │   └── ArticleDetailClient.tsx
+│   │   │   ├── charts
+│   │   │   │   ├── EfficiencyScatter.tsx
+│   │   │   │   ├── PlayerRadar.tsx
+│   │   │   │   ├── PressingVsSoliditaScatter.tsx
+│   │   │   │   └── VolumeVsCinismoScatter.tsx
+│   │   │   ├── fanta
+│   │   │   │   ├── AuctionView.tsx
+│   │   │   │   ├── DnaView.tsx
+│   │   │   │   ├── MatchupView.tsx
+│   │   │   │   ├── PremiumPlayerCard.tsx
+│   │   │   │   └── StartSitView.tsx
+│   │   │   ├── home
+│   │   │   │   ├── AnalysisGrid.tsx
+│   │   │   │   ├── HomePageContent.tsx
+│   │   │   │   ├── MatchReportBar.tsx
+│   │   │   │   ├── MatchWidget.tsx
+│   │   │   │   ├── MiniChart.tsx
+│   │   │   │   ├── NewsCard.tsx
+│   │   │   │   ├── NewsSection.tsx
+│   │   │   │   ├── PalermoHero.tsx
+│   │   │   │   ├── StatsCard.tsx
+│   │   │   │   └── TacticalCard.tsx
+│   │   │   ├── homepage
+│   │   │   │   ├── BlogGrid.tsx
+│   │   │   │   ├── DataPanel.tsx
+│   │   │   │   ├── HeroSection.tsx
+│   │   │   │   ├── LeagueGateway.tsx
+│   │   │   │   ├── MatchReportPreview.tsx
+│   │   │   │   ├── Navbar.tsx
+│   │   │   │   ├── StandingsTable.tsx
+│   │   │   │   └── TopBar.tsx
+│   │   │   ├── navigation
+│   │   │   │   ├── GlobalSearch.tsx
+│   │   │   │   └── PalermoNavbar.tsx
+│   │   │   ├── AdvancedStats.tsx
+│   │   │   ├── FantasyPlayerCard.tsx
+│   │   │   ├── Footer.tsx
+│   │   │   ├── HeroSection.tsx
+│   │   │   ├── MatchReportFooter.tsx
+│   │   │   ├── Navbar.tsx
+│   │   │   ├── NewsSection.tsx
+│   │   │   ├── PlayerTable.tsx
+│   │   │   ├── PremiumShotMap.tsx
+│   │   │   ├── PublicHeader.tsx
+│   │   │   ├── ScraperPanel.tsx
+│   │   │   ├── SeasonDashboard.tsx
+│   │   │   ├── TacticalBoard.tsx
+│   │   │   └── UniversalHeader.tsx
+│   │   ├── fanta-draft
+│   │   │   └── page.tsx
+│   │   ├── fiorentina
+│   │   │   └── page.tsx
+│   │   ├── focus
+│   │   │   ├── como
+│   │   │   │   └── page.tsx
+│   │   │   └── palermo
+│   │   │       ├── layout.tsx
+│   │   │       └── page.tsx
+│   │   ├── i18n
+│   │   │   ├── locales
+│   │   │   │   ├── de.json
+│   │   │   │   ├── en.json
+│   │   │   │   ├── es.json
+│   │   │   │   ├── fr.json
+│   │   │   │   └── it.json
+│   │   │   ├── config.ts
+│   │   │   └── I18nProvider.tsx
+│   │   ├── la-liga
+│   │   │   ├── match
+│   │   │   │   └── [id]
+│   │   │   └── page.tsx
+│   │   ├── lecce
+│   │   │   └── page.tsx
+│   │   ├── lib
+│   │   │   ├── apiClient.ts
+│   │   │   ├── articles.ts
+│   │   │   ├── blogContent.ts
+│   │   │   └── mockData.ts
+│   │   ├── ligue-1
+│   │   │   ├── match
+│   │   │   │   └── [id]
+│   │   │   └── page.tsx
+│   │   ├── match
+│   │   │   └── [id]
+│   │   ├── meritometro
+│   │   │   └── page.tsx
+│   │   ├── nerd-zone
+│   │   │   ├── components
+│   │   │   │   ├── MatchCalendar.tsx
+│   │   │   │   ├── MatchLog.tsx
+│   │   │   │   ├── NerdZonePlayerView.tsx
+│   │   │   │   ├── NerdZoneTeamView.tsx
+│   │   │   │   ├── PlayerDrilldown.tsx
+│   │   │   │   ├── RadarEcharts.tsx
+│   │   │   │   ├── RosterTable.tsx
+│   │   │   │   ├── ShotMap.tsx
+│   │   │   │   ├── ShotMapHorizontal.tsx
+│   │   │   │   ├── TeamBoard.tsx
+│   │   │   │   └── TeamSituationTable.tsx
+│   │   │   ├── lab
+│   │   │   │   └── page.tsx
+│   │   │   ├── player
+│   │   │   │   └── [slug]
+│   │   │   ├── team
+│   │   │   │   └── [id]
+│   │   │   └── page.tsx
+│   │   ├── palermo
+│   │   │   ├── components
+│   │   │   │   ├── EfficiencyScatterPink.tsx
+│   │   │   │   └── PlayerRadarPink.tsx
+│   │   │   ├── layout.tsx
+│   │   │   └── page.tsx
+│   │   ├── parma
+│   │   │   └── page.tsx
+│   │   ├── premier-league
+│   │   │   ├── match
+│   │   │   │   └── [id]
+│   │   │   └── page.tsx
+│   │   ├── report
+│   │   │   └── page.tsx
+│   │   ├── sassuolo
+│   │   │   └── page.tsx
+│   │   ├── scout-engine
+│   │   │   ├── components
+│   │   │   │   ├── DiscoverTab.tsx
+│   │   │   │   ├── H2HTab.tsx
+│   │   │   │   ├── HomeTab.tsx
+│   │   │   │   ├── LaserRadar.tsx
+│   │   │   │   ├── MatchLineupPitch.tsx
+│   │   │   │   ├── PitchSVG.tsx
+│   │   │   │   ├── ReplaceTab.tsx
+│   │   │   │   ├── SearchHub.tsx
+│   │   │   │   └── TargetTab.tsx
+│   │   │   ├── hooks
+│   │   │   │   ├── usePlayerDNA.ts
+│   │   │   │   ├── usePlayerReplacement.ts
+│   │   │   │   ├── usePlayerSearch.ts
+│   │   │   │   └── useTalentRadar.ts
+│   │   │   ├── lib
+│   │   │   │   └── scoutApi.ts
+│   │   │   └── page.tsx
+│   │   ├── serie-a
+│   │   │   ├── match
+│   │   │   │   └── [id]
+│   │   │   └── page.tsx
+│   │   ├── services
+│   │   │   ├── adminService.ts
+│   │   │   ├── deepseekService.ts
+│   │   │   ├── metrics_engine.py
+│   │   │   └── statsService.ts
+│   │   ├── team-performance
+│   │   │   └── page.tsx
+│   │   ├── test-match
+│   │   │   └── page.tsx
+│   │   ├── test-meritometro
+│   │   │   └── page.tsx
+│   │   ├── tools
+│   │   │   └── page.tsx
+│   │   ├── top-players
+│   │   │   └── page.tsx
+│   │   ├── torino
+│   │   │   └── page.tsx
+│   │   ├── types
+│   │   │   ├── blog.ts
+│   │   │   └── reports.ts
+│   │   ├── [squadra]
+│   │   ├── globals.css
+│   │   ├── layout.tsx
+│   │   └── page.tsx
+│   ├── components
+│   │   ├── MatchCard.tsx
+│   │   ├── MatchLineupPitch.tsx
+│   │   ├── MeritometroCard.tsx
+│   │   ├── Navbar.tsx
+│   │   ├── PremiumShotMap.tsx
+│   │   ├── ShotMap.tsx
+│   │   ├── TacticalBoard.tsx
+│   │   ├── TeamLogo.tsx
+│   │   └── xGFlowChart.tsx
+│   ├── content
+│   │   └── articles
+│   │       ├── de
+│   │       │   ├── fanta-draft.md
+│   │       │   ├── meritometro.md
+│   │       │   ├── nerd-zone.md
+│   │       │   ├── scout-engine.md
+│   │       │   └── timeline.md
+│   │       ├── en
+│   │       │   ├── fanta-draft.md
+│   │       │   ├── meritometro.md
+│   │       │   ├── nerd-zone.md
+│   │       │   ├── scout-engine.md
+│   │       │   └── timeline.md
+│   │       ├── es
+│   │       │   ├── fanta-draft.md
+│   │       │   ├── meritometro.md
+│   │       │   ├── nerd-zone.md
+│   │       │   ├── scout-engine.md
+│   │       │   └── timeline.md
+│   │       ├── fr
+│   │       │   ├── fanta-draft.md
+│   │       │   ├── meritometro.md
+│   │       │   ├── nerd-zone.md
+│   │       │   ├── scout-engine.md
+│   │       │   └── timeline.md
+│   │       └── it
+│   │           ├── fanta-draft.md
+│   │           ├── meritometro.md
+│   │           ├── nerd-zone.md
+│   │           ├── scout-engine.md
+│   │           └── timeline.md
+│   ├── control
+│   │   └── frontend
+│   │       ├── i18n
+│   │       └── messages
+│   ├── docs
+│   │   └── superpowers
+│   │       └── plans
+│   │           └── 2026-04-24-global-i18n-hydration.md
+│   ├── of
+│   ├── public
+│   │   ├── images
+│   │   │   ├── home
+│   │   │   │   ├── .gitkeep
+│   │   │   │   ├── fanta-cover.webp
+│   │   │   │   ├── meritometro-cover.webp
+│   │   │   │   ├── nerdzone-cover.webp
+│   │   │   │   ├── scout-cover.webp
+│   │   │   │   └── timeline-cover.webp
+│   │   │   ├── teams
+│   │   │   │   ├── AC Milan.png
+│   │   │   │   ├── Alaves.png
+│   │   │   │   ├── Angers.png
+│   │   │   │   ├── Arsenal.png
+│   │   │   │   ├── Aston Villa.png
+│   │   │   │   ├── Atalanta.png
+│   │   │   │   ├── Augsburg.png
+│   │   │   │   ├── Auxerre.png
+│   │   │   │   ├── Barcelona.png
+│   │   │   │   ├── Bayern Munich.png
+│   │   │   │   ├── Bologna.png
+│   │   │   │   ├── Borussia Dortmund.png
+│   │   │   │   ├── Borussia M.Gladbach.png
+│   │   │   │   ├── Bournemouth.png
+│   │   │   │   ├── Brentford.png
+│   │   │   │   ├── Brest.png
+│   │   │   │   ├── Brighton.png
+│   │   │   │   ├── Burnley.png
+│   │   │   │   ├── Chelsea.png
+│   │   │   │   ├── Como.png
+│   │   │   │   ├── Cremonese.png
+│   │   │   │   ├── Crystal Palace.png
+│   │   │   │   ├── Eintracht Frankfurt.png
+│   │   │   │   ├── Elche.png
+│   │   │   │   ├── Everton.png
+│   │   │   │   ├── Fiorentina.png
+│   │   │   │   ├── Freiburg.png
+│   │   │   │   ├── Fulham.png
+│   │   │   │   ├── Genoa.png
+│   │   │   │   ├── Getafe.png
+│   │   │   │   ├── Hamburger SV.png
+│   │   │   │   ├── Heidenheim.png
+│   │   │   │   ├── Hoffenheim.png
+│   │   │   │   ├── Inter.png
+│   │   │   │   ├── Juventus.png
+│   │   │   │   ├── Lazio.png
+│   │   │   │   ├── Le Havre.png
+│   │   │   │   ├── Lecce.png
+│   │   │   │   ├── Leeds.png
+│   │   │   │   ├── Lens.png
+│   │   │   │   ├── Levante.png
+│   │   │   │   ├── Lille.png
+│   │   │   │   ├── Liverpool.png
+│   │   │   │   ├── Lorient.png
+│   │   │   │   ├── Lyon.png
+│   │   │   │   ├── Mainz.png
+│   │   │   │   ├── Mallorca.png
+│   │   │   │   ├── Manchester City.png
+│   │   │   │   ├── Manchester United.png
+│   │   │   │   ├── Marseille.png
+│   │   │   │   ├── Metz.png
+│   │   │   │   ├── Milan.png
+│   │   │   │   ├── Monaco.png
+│   │   │   │   ├── Nantes.png
+│   │   │   │   ├── Napoli.png
+│   │   │   │   ├── Newcastle United.png
+│   │   │   │   ├── Nice.png
+│   │   │   │   ├── Nottingham Forest.png
+│   │   │   │   ├── Paris FC.png
+│   │   │   │   ├── Paris Saint Germain.png
+│   │   │   │   ├── Parma.png
+│   │   │   │   ├── Pisa.png
+│   │   │   │   ├── RasenBallsport Leipzig.png
+│   │   │   │   ├── Rayo Vallecano.png
+│   │   │   │   ├── Real Betis.png
+│   │   │   │   ├── Real Madrid.png
+│   │   │   │   ├── Real Oviedo.png
+│   │   │   │   ├── Real Sociedad.png
+│   │   │   │   ├── Roma.png
+│   │   │   │   ├── Sassuolo.png
+│   │   │   │   ├── Sevilla.png
+│   │   │   │   ├── St. Pauli.png
+│   │   │   │   ├── Strasbourg.png
+│   │   │   │   ├── Stuttgart.png
+│   │   │   │   ├── Sunderland.png
+│   │   │   │   ├── Torino.png
+│   │   │   │   ├── Tottenham.png
+│   │   │   │   ├── Toulouse.png
+│   │   │   │   ├── Udinese.png
+│   │   │   │   ├── Union Berlin.png
+│   │   │   │   ├── Valencia.png
+│   │   │   │   ├── Verona.png
+│   │   │   │   ├── Villarreal.png
+│   │   │   │   ├── Werder Bremen.png
+│   │   │   │   ├── West Ham.png
+│   │   │   │   ├── Wolfsburg.png
+│   │   │   │   └── Wolverhampton Wanderers.png
+│   │   │   ├── blog_1.webp
+│   │   │   ├── nico_paz.png
+│   │   │   ├── player-placeholder.svg
+│   │   │   ├── premier.webp
+│   │   │   └── Thumbnail-web.jpg
+│   │   ├── leagues
+│   │   │   ├── bundesliga.png
+│   │   │   ├── laliga.png
+│   │   │   ├── ligue1.png
+│   │   │   ├── premierleague.png
+│   │   │   └── seriea.png
+│   │   ├── lecce
+│   │   │   ├── camarda.png
+│   │   │   ├── corvino.avif
+│   │   │   ├── Lecce.png
+│   │   │   └── stadio.jpg
+│   │   ├── logos
+│   │   │   ├── AC Milan.png
+│   │   │   ├── Alaves.png
+│   │   │   ├── Angers.png
+│   │   │   ├── Arsenal.png
+│   │   │   ├── Aston Villa.png
+│   │   │   ├── Atalanta.png
+│   │   │   ├── athletic club.png
+│   │   │   ├── Atletico Madrid.png
+│   │   │   ├── Augsburg.png
+│   │   │   ├── Auxerre.png
+│   │   │   ├── Barcelona.png
+│   │   │   ├── Bayer Leverkusen.png
+│   │   │   ├── Bayern Munich.png
+│   │   │   ├── Bologna.png
+│   │   │   ├── Borussia Dortmund.png
+│   │   │   ├── Borussia M.Gladbach.png
+│   │   │   ├── Bournemouth.png
+│   │   │   ├── Brentford.png
+│   │   │   ├── Brest.png
+│   │   │   ├── Brighton.png
+│   │   │   ├── Burnley.png
+│   │   │   ├── Cagliari.png
+│   │   │   ├── celta vigo.png
+│   │   │   ├── Chelsea.png
+│   │   │   ├── Como.png
+│   │   │   ├── Cremonese.png
+│   │   │   ├── Crystal Palace.png
+│   │   │   ├── Eintracht Frankfurt.png
+│   │   │   ├── Elche.png
+│   │   │   ├── Espanyol.png
+│   │   │   ├── Everton.png
+│   │   │   ├── FC Cologne.png
+│   │   │   ├── FC Heidenheim.png
+│   │   │   ├── Fiorentina.png
+│   │   │   ├── Freiburg.png
+│   │   │   ├── Fulham.png
+│   │   │   ├── Genoa.png
+│   │   │   ├── Getafe.png
+│   │   │   ├── Girona.png
+│   │   │   ├── Hamburger SV.png
+│   │   │   ├── Heidenheim.png
+│   │   │   ├── Hoffenheim.png
+│   │   │   ├── Inter.png
+│   │   │   ├── Juventus.png
+│   │   │   ├── Lazio.png
+│   │   │   ├── Le Havre.png
+│   │   │   ├── Lecce.png
+│   │   │   ├── Leeds.png
+│   │   │   ├── Lens.png
+│   │   │   ├── Levante.png
+│   │   │   ├── Lille.png
+│   │   │   ├── Liverpool.png
+│   │   │   ├── Lorient.png
+│   │   │   ├── Lyon.png
+│   │   │   ├── Mainz 05.png
+│   │   │   ├── Mainz.png
+│   │   │   ├── Mallorca.png
+│   │   │   ├── Manchester City.png
+│   │   │   ├── Manchester United.png
+│   │   │   ├── Marseille.png
+│   │   │   ├── Metz.png
+│   │   │   ├── Milan.png
+│   │   │   ├── Monaco.png
+│   │   │   ├── Nantes.png
+│   │   │   ├── Napoli.png
+│   │   │   ├── Newcastle United.png
+│   │   │   ├── Nice.png
+│   │   │   ├── Nottingham Forest.png
+│   │   │   ├── Osasuna.png
+│   │   │   ├── Palermo.png
+│   │   │   ├── Paris FC.png
+│   │   │   ├── Paris Saint Germain.png
+│   │   │   ├── Parma.png
+│   │   │   ├── Pisa.png
+│   │   │   ├── RasenBallsport Leipzig.png
+│   │   │   ├── Rayo Vallecano.png
+│   │   │   ├── RB Leipzig.png
+│   │   │   ├── Real Betis.png
+│   │   │   ├── Real Madrid.png
+│   │   │   ├── Real Oviedo.png
+│   │   │   ├── Real Sociedad.png
+│   │   │   ├── rennes.png
+│   │   │   ├── Roma.png
+│   │   │   ├── Sassuolo.png
+│   │   │   ├── Sevilla.png
+│   │   │   ├── St. Pauli.png
+│   │   │   ├── Strasbourg.png
+│   │   │   ├── Stuttgart.png
+│   │   │   ├── Sunderland.png
+│   │   │   ├── Torino.png
+│   │   │   ├── Tottenham.png
+│   │   │   ├── Toulouse.png
+│   │   │   ├── Udinese.png
+│   │   │   ├── Union Berlin.png
+│   │   │   ├── Valencia.png
+│   │   │   ├── Verona.png
+│   │   │   ├── VfB Stuttgart.png
+│   │   │   ├── Villarreal.png
+│   │   │   ├── Werder Bremen.png
+│   │   │   ├── West Ham.png
+│   │   │   ├── Wolfsburg.png
+│   │   │   └── Wolverhampton Wanderers.png
+│   │   ├── mockup
+│   │   │   ├── atalanta-full-mockup.png
+│   │   │   ├── como-full-mockup.png
+│   │   │   ├── lecce-full-mockup.png
+│   │   │   ├── palermo-full-mockup.png
+│   │   │   ├── parma-full-mockup.png
+│   │   │   ├── sassuolo-full-mockup.png
+│   │   │   └── torino-full-mockup.png
+│   │   └── palermo
+│   │       ├── abbraccio.jpg
+│   │       ├── AL1_0070-1920x1060.jpg
+│   │       ├── da8qkwmw0aaiyr12387620460391257045.jpg
+│   │       ├── joel-pohjanpal.jpg
+│   │       ├── orig.jpg
+│   │       └── palermo-1995-96-4.jpg.webp
+│   ├── .env.local
+│   ├── Dockerfile
+│   ├── fanta_dashboard.html
+│   ├── finder.html
+│   ├── next-env.d.ts
+│   ├── next.config.js
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── postcss.config.js
+│   ├── response.txt
+│   ├── tailwind.config.ts
+│   ├── tsconfig.json
+│   └── tsconfig.tsbuildinfo
+├── scripts
+│   └── map_understat_ids.py
+├── show claude
+│   ├── finder1.html
+│   └── scout1.txt
+├── vecchia app
+│   ├── api
+│   │   ├── app
+│   │   │   └── api
+│   │   │       └── analytics.py
+│   │   └── crud.py
+│   ├── db
+│   │   ├── database.py
+│   │   ├── models.py
+│   │   └── __init__.py
+│   ├── scraper
+│   │   ├── scraper_orchestrator.py
+│   │   ├── understat_engine.py
+│   │   └── __init__.py
+│   ├── tasks
+│   │   ├── updater.py
+│   │   └── __init__.py
+│   └── __init__.py
+├── vecchi_script_backup
+│   ├── assess_dummy.py
+│   ├── batch_scrape_force.py
+│   ├── batch_scrape_shots.py
+│   ├── batch_scrape_shots_test.py
+│   ├── check_db.py
+│   ├── check_matches.py
+│   ├── check_matches_after.py
+│   ├── check_match_29.py
+│   ├── check_match_after_scrape.py
+│   ├── check_pending.py
+│   ├── check_real_matches.py
+│   ├── check_shots_columns.py
+│   ├── check_status.py
+│   ├── check_table.py
+│   ├── check_understat.py
+│   ├── debug_match.py
+│   ├── debug_match2.py
+│   ├── debug_understat.py
+│   ├── delete_dummy.py
+│   ├── execute_query.py
+│   ├── fetch_api.py
+│   ├── get_match.py
+│   ├── list_pg_tables.py
+│   ├── list_tables.py
+│   ├── query_finito.py
+│   ├── query_shots.py
+│   ├── reset_failed_to_pending.py
+│   ├── reset_scraping_status.py
+│   ├── run_scraper_loop.py
+│   ├── test_force_scrape.py
+│   ├── test_match_29.py
+│   ├── test_understat_lib.py
+│   ├── TODO_DOMANI.md
+│   ├── truncate_tables.py
+│   ├── update_match_status.py
+│   └── verify_pipeline.py
+├── .env
+├── .gitignore
+├── docker-compose.yml
+├── FANTA_DRAFT_ENGINE_SQL.md
+├── lineup_response.json
+├── main.py
+├── package-lock.json
+├── package.json
+├── response.txt
+├── struttura_progetto.txt
+├── temp_inspect.py
+├── temp_master.py
+├── temp_player_registry.py
+├── temp_query.py
+├── temp_sample.py
+└── temp_search.py

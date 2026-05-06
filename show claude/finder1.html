@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BARSPORT_SCOUT_ENGINE | Intelligence & Decision Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-page: #f4f7f6; 
+            --bg-card: #ffffff;  
+            --brand-magenta: #ff2a5f; 
+            --brand-blue: #007aff; 
+            --text-dark: #0f172a;  
+            --text-primary: #1a1a1a;  
+            --text-secondary: #707fa3;
+            --text-dim: #64748b;  
+            --border-ui: rgba(0, 0, 0, 0.08); 
+            --hero-bg: #111827;
+            --status-success: #28a745;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, sans-serif; 
+            background-color: var(--bg-page); 
+            color: var(--text-dark); 
+            padding: 20px; 
+            line-height: 1.4;
+        }
+
+        .scout-nav {
+            background: var(--bg-card); border: 1px solid var(--border-ui); border-radius: 12px;
+            padding: 15px 25px; display: flex; align-items: center; justify-content: space-between; gap: 20px;
+            margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            position: sticky; top: 20px; z-index: 1000;
+        }
+        .nav-logo { font-weight: 900; font-size: 20px; text-transform: uppercase; letter-spacing: -1px; cursor: pointer; }
+        .nav-logo span { color: var(--brand-magenta); }
+        .nav-btns { display: flex; gap: 15px; }
+        
+        .btn-base { 
+            padding: 12px 24px; border-radius: 8px; font-weight: 800; font-size: 11px; 
+            text-transform: uppercase; cursor: pointer; letter-spacing: 0.5px; transition: 0.2s; 
+        }
+        .btn-dark { background: var(--text-dark); color: white; border: 2px solid var(--text-dark); }
+        .btn-dark:hover { background: var(--brand-magenta); border-color: var(--brand-magenta); }
+        .btn-light { background: white; color: var(--text-dim); border: 2px solid var(--border-ui); }
+        .btn-light:hover { border-color: var(--text-dark); color: var(--text-dark); }
+        .btn-light.active { border-color: var(--brand-magenta); color: var(--brand-magenta); }
+
+        .disclaimer-bar { 
+            background: rgba(255,42,95,0.05); color: var(--brand-magenta); text-align: center; 
+            font-size: 10px; font-weight: 800; padding: 6px; border-radius: 6px; margin-bottom: 20px; 
+            text-transform: uppercase; letter-spacing: 1px; border: 1px solid rgba(255,42,95,0.1); 
+        }
+
+        .search-suggestions {
+            position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-card);
+            border: 1px solid var(--border-ui); border-radius: 8px; margin-top: 5px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); max-height: 300px; overflow-y: auto;
+            z-index: 2000; display: none;
+        }
+        .search-suggestions.active { display: block; }
+        .sugg-item {
+            padding: 12px 15px; border-bottom: 1px solid var(--border-ui); cursor: pointer;
+            display: flex; justify-content: space-between; align-items: center; transition: 0.2s;
+        }
+        .sugg-item:last-child { border-bottom: none; }
+        .sugg-item:hover { background: #f8fafc; padding-left: 20px; }
+        .sugg-name { font-weight: 800; font-size: 13px; color: var(--text-dark); text-transform: uppercase; }
+
+        .view-section { display: none; max-width: 1750px; margin: 0 auto; animation: fadeIn 0.3s ease; }
+        .view-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .target-hero {
+            background: var(--hero-bg); color: white; border-radius: 16px; padding: 40px;
+            display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: center;
+            margin-bottom: 30px; border-left: 12px solid var(--brand-magenta);
+        }
+        .hero-title-box span { color: var(--brand-magenta); font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; display: block; margin-bottom: 5px; }
+        .hero-title-box h2 { font-size: 58px; font-weight: 900; text-transform: uppercase; letter-spacing: -2px; line-height: 0.9; margin: 0; }
+        .hero-stats { display: flex; gap: 50px; text-align: left; }
+        .hero-stat-lbl { font-size: 9px; color: #94a3b8; font-weight: 800; text-transform: uppercase; margin-bottom: 5px; }
+        .hero-stat-val { font-size: 18px; font-weight: 700; color: white; text-transform: uppercase; }
+
+        .scout-card {
+            background: var(--bg-card); border-radius: 12px; padding: 25px;
+            border: 1px solid var(--border-ui); box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+            transition: 0.3s;
+        }
+        .sub-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .sub-header h2 { font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); font-weight: 800; margin:0;}
+        .sub-header .line-separator { height: 1px; flex-grow: 1; background: var(--border-ui); }
+
+        .finder-grid-wrapper {
+            max-height: 800px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        .finder-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(550px, 1fr)); gap: 30px; }
+        .f-card { background: white; border: 1px solid var(--border-ui); border-radius: 16px; padding: 30px; cursor: pointer; transition: 0.3s; }
+        .f-card:hover { border-color: var(--brand-magenta); box-shadow: 0 10px 30px rgba(0,0,0,0.05); transform: translateY(-3px); }
+        
+        .card-header-exact { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; }
+        .p-name-box h3 { font-size: 26px; font-weight: 900; text-transform: uppercase; margin-bottom: 4px; letter-spacing: -0.5px; }
+        .p-name-box p { font-size: 10px; color: var(--text-dim); font-weight: 700; text-transform: uppercase; }
+        
+        .sim-box-exact { border: 2px solid var(--brand-magenta); border-radius: 12px; padding: 12px 18px; text-align: center; }
+        .sim-val { font-size: 26px; font-weight: 900; color: var(--brand-magenta); display: block; line-height: 1; margin-bottom: 2px; }
+        .sim-lbl { font-size: 8px; font-weight: 900; color: var(--text-dark); text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .merit-matrix { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 40px; }
+        .merit-row-exact { display: flex; flex-direction: column; gap: 6px; }
+        .m-labels { display: flex; justify-content: space-between; align-items: baseline; }
+        .m-title { font-size: 10px; font-weight: 800; color: var(--text-dim); text-transform: uppercase; }
+        .m-tag { font-size: 10px; font-weight: 900; text-transform: uppercase; }
+        .m-track-bg { height: 8px; background: #f1f5f9; border-radius: 4px; overflow: hidden; width: 100%; }
+        .m-fill-bar { height: 100%; }
+
+        .filter-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 15px; margin-bottom: 20px; align-items: center; }
+        .filter-btn { background: white; border: 1px solid var(--border-ui); padding: 10px 15px; border-radius: 8px; font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--text-dim); cursor: pointer; white-space: nowrap; transition: 0.2s; }
+        .filter-btn:hover { border-color: var(--text-dark); color: var(--text-dark); }
+        .filter-btn.active { background: var(--text-dark); color: white; border-color: var(--text-dark); }
+        
+        .league-select { 
+            background: white; border: 2px solid var(--border-ui); padding: 9px 15px; 
+            border-radius: 8px; font-size: 11px; font-weight: 800; text-transform: uppercase; 
+            color: var(--text-dark); cursor: pointer; outline: none; margin-left: auto;
+        }
+        .league-select:focus { border-color: var(--brand-magenta); }
+
+        .engine-container {
+            display: grid; grid-template-columns: 400px 1fr 420px; grid-template-rows: auto auto auto; gap: 25px;
+        }
+        .sidebar-col { grid-row: span 3; display: flex; flex-direction: column; gap: 20px; }
+        
+        .profile-header { text-align: center; border-bottom: 2px solid var(--border-ui); padding-bottom: 25px; }
+        .player-name { font-size: 36px; font-weight: 800; text-transform: uppercase; letter-spacing: -1.5px; margin: 10px 0; color: var(--text-primary); }
+        .league-label { font-size: 11px; font-weight: 700; color: var(--brand-blue); text-transform: uppercase; letter-spacing: 2.5px; }
+        
+        .stats-summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .summary-box { background: #f8f9fa; padding: 14px; border-radius: 8px; text-align: center; border: 1px solid var(--border-ui); }
+        .summary-val { display: block; font-weight: 800; font-size: 18px; color: var(--text-primary); }
+        .summary-lbl { font-size: 10px; color: var(--text-secondary); text-transform: uppercase; font-weight: 600; }
+
+        .verdict-highlight { background: linear-gradient(135deg, #ffffff 0%, #fff0f3 100%); border-top: 4px solid var(--brand-magenta); }
+        .verdict-title { color: var(--brand-magenta); font-size: 11px; font-weight: 900; text-transform: uppercase; margin-bottom: 12px; display: block; }
+        .verdict-body { font-size: 14px; color: #444; font-style: italic; line-height: 1.6; }
+
+        .dna-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 12px; }
+        .dna-table th { text-align: left; padding: 12px 8px; border-bottom: 2px solid var(--border-ui); color: var(--text-secondary); text-transform: uppercase; font-weight: 700; }
+        .dna-table td { padding: 12px 8px; border-bottom: 1px solid var(--border-ui); font-weight: 600; }
+        .dna-table tr:last-child td { border: none; }
+        
+        .analytics-main { display: flex; flex-direction: column; gap: 25px; }
+        .metrics-matrix { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+        .metric-tile { background: #f8f9fa; padding: 22px 15px; border-radius: 8px; border: 1px solid var(--border-ui); text-align: center; }
+        .metric-tile.top-tier { border-color: var(--brand-magenta); background: rgba(255, 42, 95, 0.03); }
+        .tile-val { display: block; font-size: 26px; font-weight: 900; color: var(--text-primary); }
+        .tile-lbl { font-size: 10px; color: var(--text-secondary); text-transform: uppercase; font-weight: 700; margin-top: 5px; }
+
+        .pitch-container { position: relative; height: 420px; background: #fafafa; border-radius: 10px; border: 1px solid var(--border-ui); margin-top: 10px; overflow: hidden; }
+        #scoutShotCanvas { width: 100%; height: 100%; display: block; cursor: crosshair; }
+        .shot-tooltip {
+            position: absolute; pointer-events: none; opacity: 0; background: rgba(15, 23, 42, 0.95);
+            color: white; padding: 12px; border-radius: 8px; font-size: 12px; font-weight: 600;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: opacity 0.15s ease; z-index: 10;
+            border-left: 3px solid var(--brand-magenta); white-space: nowrap;
+        }
+        .shot-tooltip span.hl { color: var(--brand-magenta); font-weight: 900; }
+
+        .chart-box-h { height: 240px; margin-top: 15px; }
+        .context-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-ui); font-size: 13px; }
+        .context-row:last-child { border: none; }
+        .tag-wrap { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 15px; justify-content: center;}
+
+        .h2h-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 20px;}
+        .h2h-search-bar { display:flex; gap:10px; margin-bottom: 20px; }
+        .h2h-input { flex-grow:1; padding: 12px 15px; border: 1px solid var(--border-ui); border-radius: 8px; outline:none; font-weight: 600;}
+        .h2h-radar-container { grid-column: span 2; height: 500px; background: white; border-radius: 12px; border: 1px solid var(--border-ui); padding: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="disclaimer-bar">⚠️ ENGINE SPEC: Basato esclusivamente su dati offensivi 2025/2026. Metriche livellate tramite Team Strength Index (TSI). Filtro Min. 500 Minuti attivo.</div>
+
+    <nav class="scout-nav">
+        <div class="nav-logo" onclick="switchView('home', this)">BARSPORT<span>_SCOUT</span></div>
+        
+        <div style="flex-grow:1; max-width: 300px; position: relative;">
+            <input type="text" id="globalSearch" placeholder="Cerca giocatore rapido..." style="width:100%; padding: 10px 15px; border: 1px solid var(--border-ui); border-radius: 8px; outline:none;" onkeyup="handleSearchInput(event)" onfocus="handleSearchInput(event)">
+            <div id="searchSuggestions" class="search-suggestions"></div>
+        </div>
+
+        <div class="nav-btns">
+            <button class="btn-base btn-dark" onclick="switchView('finder', this); executeSearch(document.getElementById('globalSearch').value)">Trova Cloni</button>
+            <button class="btn-base btn-light" onclick="initUndervaluedView(this)">Sottovalutati</button>
+            <button class="btn-base btn-light" onclick="switchView('h2h', this)">Testa a Testa</button>
+            <button class="btn-base btn-light" onclick="window.location.href='fanta_dashboard.html'">Fanta Draft</button>
+        </div>
+    </nav>
+
+    <div id="view-home" class="view-section active">
+        <div class="target-hero" style="border-left-color: var(--text-dark);">
+            <div class="hero-title-box">
+                <span>Top 100 Assoluti</span>
+                <h2>European Radar 25/26</h2>
+            </div>
+            <div class="hero-stats">
+                <div><div class="hero-stat-lbl">Database Status</div><div class="hero-stat-val" style="color: #10b981;">ONLINE</div></div>
+                <div><div class="hero-stat-lbl">Lega Attiva</div><div class="hero-stat-val">Top 5 Europee</div></div>
+                <div><div class="hero-stat-lbl">Filtro Minuti</div><div class="hero-stat-val">> 500'</div></div>
+            </div>
+        </div>
+        
+        <div class="finder-grid-wrapper">
+            <div class="finder-grid" id="homepageContainer">
+                <h3 style="color:var(--text-dim); text-align:center; width:100%; padding: 50px;">Caricamento classifica generale...</h3>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-finder" class="view-section">
+        <div class="target-hero">
+            <div class="hero-title-box"><span>Ricerca Target Correlato</span><h2 id="heroTargetName">Ricerca in corso...</h2></div>
+            <div class="hero-stats">
+                <div><div class="hero-stat-lbl">Algoritmo</div><div class="hero-stat-val">Dist. Quadratica</div></div>
+                <div><div class="hero-stat-lbl">Pesi</div><div class="hero-stat-val">xG(2) - xA(2)</div></div>
+            </div>
+        </div>
+        <div class="finder-grid-wrapper">
+            <div class="finder-grid" id="clonesContainer"></div>
+        </div>
+    </div>
+
+    <div id="view-undervalued" class="view-section">
+        <div class="target-hero" style="border-left-color: white;">
+            <div class="hero-title-box"><span>Database Intelligence</span><h2>Scouting Undervalued</h2></div>
+            <div class="hero-stats">
+                <div><div class="hero-stat-lbl">Filtro Minuti</div><div class="hero-stat-val">> 500'</div></div>
+                <div><div class="hero-stat-lbl">TSI Adjust</div><div class="hero-stat-val">Attivo</div></div>
+            </div>
+        </div>
+
+        <div class="filter-scroll">
+            <button class="filter-btn active" data-cat="generale" onclick="loadUndervaluedCategory('generale', this)">🔮 Generale</button>
+            <button class="filter-btn" data-cat="bomber" onclick="loadUndervaluedCategory('bomber', this)">💣 Bomber Silenti</button>
+            <button class="filter-btn" data-cat="registi" onclick="loadUndervaluedCategory('registi', this)">👁️ Registi Incompresi</button>
+            <button class="filter-btn" data-cat="motori" onclick="loadUndervaluedCategory('motori', this)">🚂 Motori Occulti</button>
+            <button class="filter-btn" data-cat="costruttori" onclick="loadUndervaluedCategory('costruttori', this)">🧱 Registi Ombra</button>
+            <button class="filter-btn" data-cat="sprecatori" onclick="loadUndervaluedCategory('sprecatori', this)">🔫 Sprecatori Seriali</button>
+            <button class="filter-btn" data-cat="trap_over" onclick="loadUndervaluedCategory('trap_over', this)">📉 TRAP: Overperformer</button>
+            
+            <select id="leagueFilter" class="league-select" onchange="refreshUndervalued()">
+                <option value="0">🌍 Tutte le Leghe (Top 5)</option>
+                <option value="1">🇮🇹 Serie A</option>
+                <option value="2">🇬🇧 Premier League</option>
+                <option value="3">🇪🇸 La Liga</option>
+                <option value="4">🇩🇪 Bundesliga</option>
+                <option value="5">🇫🇷 Ligue 1</option>
+            </select>
+        </div>
+
+        <div class="finder-grid-wrapper">
+            <div class="finder-grid" id="undervaluedContainer">
+                <h3 style="color:var(--text-dim); text-align:center; padding: 50px; width: 100%;">Seleziona un filtro per analizzare il database...</h3>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-player" class="view-section">
+        <div class="engine-container" id="player-profile-container" style="display:none;">
+            
+            <aside class="sidebar-col">
+                <div class="scout-card profile-header">
+                    <span class="league-label" id="p-league"></span>
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 15px; margin: 10px 0;">
+                        <img id="p-team-logo" src="" style="width: 55px; height: 55px; object-fit: contain;" onerror="this.onerror=null; this.style.display='none';">
+                        <h1 class="player-name" id="p-name" style="margin: 0;"></h1>
+                    </div>
+                    <div id="p-team-name" style="font-size: 14px; font-weight: 800; color: var(--text-dim); text-transform: uppercase; margin-bottom: 15px;"></div>
+                    <div class="stats-summary-grid">
+                        <div class="summary-box"><span class="summary-val" id="p-age"></span><span class="summary-lbl">Età</span></div>
+                        <div class="summary-box"><span class="summary-val" id="p-foot"></span><span class="summary-lbl">Piede</span></div>
+                        <div class="summary-box"><span class="summary-val" id="p-mins"></span><span class="summary-lbl">Minuti 25/26</span></div>
+                        <div class="summary-box"><span class="summary-val" id="p-role"></span><span class="summary-lbl">Profilo</span></div>
+                    </div>
+                    <div class="tag-wrap" id="p-tags"></div>
+                </div>
+
+                <div class="scout-card verdict-highlight">
+                    <span class="verdict-title">BarSport AI Verdict</span>
+                    <p class="verdict-body" id="p-ai-verdict"></p>
+                </div>
+
+                <div class="scout-card">
+                    <div class="sub-header"><h2>3-Season Finishing DNA</h2><div class="line-separator"></div></div>
+                    <table class="dna-table">
+                        <thead>
+                            <tr><th>Arto</th><th>23/24</th><th>24/25</th><th>25/26</th><th>Tot.</th></tr>
+                        </thead>
+                        <tbody id="p-dna-body"></tbody>
+                    </table>
+                </div>
+            </aside>
+
+            <main class="analytics-main">
+                <div class="scout-card">
+                    <div class="sub-header"><h2>Advanced Performance Metrics (Per 90)</h2><div class="line-separator"></div></div>
+                    <div class="metrics-matrix" id="p-metrics-matrix"></div>
+                </div>
+
+                <div class="scout-card">
+                    <div class="sub-header"><h2>BarSport Shot Map Intelligence</h2><div class="line-separator"></div></div>
+                    <div class="pitch-container">
+                        <canvas id="scoutShotCanvas"></canvas>
+                        <div id="shotTooltip" class="shot-tooltip"></div>
+                    </div>
+                    <div style="display: flex; gap: 20px; margin-top: 15px; font-size: 11px; color: var(--text-secondary); font-weight: 700;">
+                        <span>● GOL (LASER GLOW)</span>
+                        <span>○ FUORI / MISSED</span>
+                        <span>● PARATO / SAVED</span>
+                    </div>
+                </div>
+            </main>
+
+            <div class="sidebar-col">
+                <div class="scout-card">
+                    <div class="sub-header"><h2>Growth Trend (24/25 - 25/26)</h2><div class="line-separator"></div></div>
+                    <div class="chart-box-h">
+                        <canvas id="growthTrendChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="scout-card">
+                    <div class="sub-header"><h2>Global Role Percentiles</h2><div class="line-separator"></div></div>
+                    <div style="height: 300px;">
+                        <canvas id="scoutRadarChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="scout-card" style="background: rgba(0, 122, 255, 0.02);">
+                    <div class="sub-header"><h2>Contextual Intelligence</h2><div class="line-separator"></div></div>
+                    <div class="context-row">
+                        <span class="summary-lbl">Field Tilt (Dominio)</span>
+                        <span class="summary-val" id="p-ctx-poss"></span>
+                    </div>
+                    <div class="context-row">
+                        <span class="summary-lbl">Team Strength (TSI)</span>
+                        <span class="summary-val" id="p-ctx-ppda"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="player-profile-status" style="text-align:center; padding:50px; color:var(--text-dim);">
+            <h3>In attesa di dati dal server...</h3>
+        </div>
+    </div>
+    
+    <div id="view-h2h" class="view-section">
+        <div class="target-hero">
+            <div class="hero-title-box"><span>Analisi Comparativa</span><h2>H2H Engine</h2></div>
+            <div class="hero-stats">
+                <div><div class="hero-stat-lbl">Metrica</div><div class="hero-stat-val">Percentili</div></div>
+            </div>
+        </div>
+        
+        <div class="h2h-search-bar">
+            <input type="text" id="h2h-p1-input" class="h2h-input" placeholder="Giocatore 1">
+            <input type="text" id="h2h-p2-input" class="h2h-input" placeholder="Giocatore 2">
+            <button class="btn-base btn-dark" onclick="executeH2H()">Compara</button>
+        </div>
+
+        <div class="h2h-grid" id="h2h-results" style="display:none;">
+            <div class="scout-card" id="h2h-card-1"></div>
+            <div class="scout-card" id="h2h-card-2"></div>
+            <div class="h2h-radar-container">
+                <canvas id="h2hRadarChart"></canvas>
+            </div>
+        </div>
+        <div id="h2h-status" style="text-align:center; padding:50px; color:var(--text-dim); display:none;"></div>
+    </div>
+
+    <!-- INIZIO JAVASCRIPT -->
+    <script>
+        const API = "http://127.0.0.1:9000";
+        
+        let radarChartInstance = null;
+        let trendChartInstance = null;
+        let h2hRadarInstance = null;
+        let currentShotsData = []; 
+        let currentUndervaluedCategory = 'generale';
+
+        Chart.defaults.color = '#707fa3';
+        Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+
+        // --- FUNZIONI DI NAVIGAZIONE MANCANTI AGGIUNTE ---
+        function switchView(viewId, btn = null) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.getElementById('view-' + viewId).classList.add('active');
+            
+            if (btn) {
+                document.querySelectorAll('.scout-nav .btn-base').forEach(b => b.classList.remove('active'));
+                if(btn.classList.contains('btn-light') || btn.classList.contains('btn-dark')) {
+                    btn.classList.add('active');
+                }
+            }
+        }
+
+        function initUndervaluedView(btn) {
+            switchView('undervalued', btn);
+            loadUndervaluedCategory('generale', document.querySelector('.filter-btn[data-cat="generale"]'));
+        }
+
+        function getQualityTag(val, isTrap = false) {
+            if (isTrap) return { t: 'TRAP', c: '#ff4757' };
+            if (val > 80) return { t: 'ELITE', c: '#ff2a5f' };
+            if (val > 60) return { t: 'OTTIMO', c: '#007aff' };
+            if (val > 40) return { t: 'MEDIO', c: '#f59e0b' };
+            return { t: 'SCARSO', c: '#64748b' };
+        }
+
+        // --- RICERCA GLOBALE CON TASTO INVIO ---
+        let searchTimeout = null;
+
+        async function handleSearchInput(e) {
+            const query = e.target.value.trim();
+            const suggestionsContainer = document.getElementById('searchSuggestions');
+            
+            if (e.key === 'Enter') {
+                if (query.length > 0) {
+                    suggestionsContainer.classList.remove('active');
+                    loadPlayerProfile(query); 
+                }
+                return;
+            }
+
+            clearTimeout(searchTimeout);
+            
+            if (query.length < 2) {
+                suggestionsContainer.classList.remove('active');
+                suggestionsContainer.innerHTML = '';
+                return;
+            }
+
+            searchTimeout = setTimeout(async () => {
+                try {
+                    const res = await fetch(`${API}/api/scout/search?q=${encodeURIComponent(query)}`);
+                    if (!res.ok) throw new Error("Errore API");
+                    const players = await res.json();
+                    
+                    if (players.length > 0) {
+                        suggestionsContainer.innerHTML = players.map(p => 
+                            `<div class="sugg-item" onclick="selezionaGiocatore('${p.replace(/'/g, "\\'")}')">
+                                <span class="sugg-name">${p}</span>
+                            </div>`
+                        ).join('');
+                        suggestionsContainer.classList.add('active');
+                    } else {
+                        suggestionsContainer.innerHTML = '<div class="sugg-item"><span class="sugg-name">Nessun risultato</span></div>';
+                        suggestionsContainer.classList.add('active');
+                    }
+                } catch (err) {
+                    console.error("Errore suggerimenti:", err);
+                }
+            }, 300);
+        }
+
+        function selezionaGiocatore(nomeGiocatore) {
+            const input = document.getElementById('globalSearch');
+            const suggestionsContainer = document.getElementById('searchSuggestions');
+            
+            input.value = nomeGiocatore;
+            suggestionsContainer.classList.remove('active');
+            
+            loadPlayerProfile(nomeGiocatore);
+        }
+
+        document.addEventListener('click', function(e) {
+            const sugg = document.getElementById('searchSuggestions');
+            const input = document.getElementById('globalSearch');
+            if (e.target !== sugg && e.target !== input && sugg) {
+                sugg.classList.remove('active');
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadHomepage();
+        });
+
+        async function loadHomepage() {
+            const container = document.getElementById('homepageContainer');
+            container.innerHTML = `<h3 style="color:var(--text-dim); text-align:center; width:100%; padding: 50px;">Caricamento Scout Leaders...</h3>`;
+            
+            try {
+                const res = await fetch(`${API}/api/scout/leaders`);
+                if (!res.ok) throw new Error("Lo Scout Engine non risponde correttamente.");
+                
+                const data = await res.json();
+                let html = '';
+
+                if (data.scorers && data.scorers.length > 0) {
+                    html += `<div style="width: 100%;"><div class="sub-header"><h2>TOP SCORERS (GOL & xG/90)</h2><div class="line-separator"></div></div>`;
+                    html += `<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 25px; margin-bottom: 50px;">`;
+                    
+                    data.scorers.forEach((p, index) => {
+                        html += `
+                        <div class="f-card" onclick="selezionaGiocatore('${p.name.replace(/'/g, "\\'")}')" style="padding: 25px; border-left: 6px solid var(--brand-magenta); display: flex; flex-direction: column; justify-content: center; background: linear-gradient(145deg, #ffffff 0%, #fcfcfc 100%);">
+                            <span style="font-size: 11px; font-weight: 900; color: var(--text-dim); letter-spacing: 2px;">RANK #${index + 1}</span>
+                            <h3 style="font-size: 24px; font-weight: 900; margin: 5px 0 20px 0; text-transform: uppercase; letter-spacing: -0.5px; color: var(--text-dark);">${p.name}</h3>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; border-top: 1px solid var(--border-ui); padding-top: 15px;">
+                                <div>
+                                    <span style="display: block; font-size: 10px; font-weight: 800; color: var(--text-dim); text-transform: uppercase;">Output Reale</span>
+                                    <span style="font-weight: 900; font-size: 18px; color: var(--text-dark);">${p.value}</span>
+                                </div>
+                                <div>
+                                    <span style="display: block; font-size: 10px; font-weight: 800; color: var(--brand-magenta); text-transform: uppercase;">Expected Rate</span>
+                                    <span style="font-weight: 900; color: var(--brand-magenta); font-size: 18px;">${p.stat}</span>
+                                </div>
+                            </div>
+                        </div>`;
+                    });
+                    html += `</div></div>`;
+                }
+
+                if (data.architects && data.architects.length > 0) {
+                    html += `<div style="width: 100%;"><div class="sub-header"><h2>TOP ARCHITECTS (ASSIST & xA/90)</h2><div class="line-separator"></div></div>`;
+                    html += `<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 25px; margin-bottom: 50px;">`;
+                    
+                    data.architects.forEach((p, index) => {
+                        html += `
+                        <div class="f-card" onclick="selezionaGiocatore('${p.name.replace(/'/g, "\\'")}')" style="padding: 25px; border-left: 6px solid var(--brand-blue); display: flex; flex-direction: column; justify-content: center; background: linear-gradient(145deg, #ffffff 0%, #fcfcfc 100%);">
+                            <span style="font-size: 11px; font-weight: 900; color: var(--text-dim); letter-spacing: 2px;">RANK #${index + 1}</span>
+                            <h3 style="font-size: 24px; font-weight: 900; margin: 5px 0 20px 0; text-transform: uppercase; letter-spacing: -0.5px; color: var(--text-dark);">${p.name}</h3>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; border-top: 1px solid var(--border-ui); padding-top: 15px;">
+                                <div>
+                                    <span style="display: block; font-size: 10px; font-weight: 800; color: var(--text-dim); text-transform: uppercase;">Output Reale</span>
+                                    <span style="font-weight: 900; font-size: 18px; color: var(--text-dark);">${p.value}</span>
+                                </div>
+                                <div>
+                                    <span style="display: block; font-size: 10px; font-weight: 800; color: var(--brand-blue); text-transform: uppercase;">Expected Rate</span>
+                                    <span style="font-weight: 900; color: var(--brand-blue); font-size: 18px;">${p.stat}</span>
+                                </div>
+                            </div>
+                        </div>`;
+                    });
+                    html += `</div></div>`;
+                }
+
+                if (html === '') throw new Error("Dati ricevuti ma nessun leader trovato.");
+                
+                container.innerHTML = html;
+                
+            } catch (e) {
+                console.error("Dettaglio Errore:", e);
+                container.innerHTML = `<h3 style="color:red; text-align:center; width:100%; padding: 50px;">Errore: ${e.message}</h3>`;
+            }
+        }
+
+        function generateCardHTML(p, isTrap = false) {
+            const pXg = p.p_xg || 0; 
+            const pXa = p.p_xa || 0;
+            const pChain = p.p_xgchain || 0;
+            const pBuild = p.p_xgbuildup || 0;
+
+            const tXg = getQualityTag(pXg, isTrap);
+            const tXa = getQualityTag(pXa, isTrap);
+            const tChain = getQualityTag(pChain, isTrap);
+            const tBuild = getQualityTag(pBuild, isTrap);
+
+            const simBlock = p.similarity_score ? `
+                <div class="sim-box-exact">
+                    <span class="sim-val">${p.similarity_score}%</span>
+                    <span class="sim-lbl">Similarity</span>
+                </div>` : '';
+
+            return `
+            <div class="f-card" onclick="loadPlayerProfile('${p.player.replace(/'/g, "\\'")}')">
+                <div class="card-header-exact">
+                    <div class="p-name-box">
+                        <h3>${p.player}</h3>
+                        <p>${p.position || 'N/A'} | SCOUT REPORT</p>
+                    </div>
+                    ${simBlock}
+                </div>
+                <div class="merit-matrix">
+                    <div class="merit-row-exact">
+                        <div class="m-labels"><span class="m-title">Cinismo (xG)</span><span class="m-tag" style="color:${tXg.c}">${tXg.t}</span></div>
+                        <div class="m-track-bg"><div class="m-fill-bar" style="width: ${pXg}%; background:${tXg.c}"></div></div>
+                    </div>
+                    <div class="merit-row-exact">
+                        <div class="m-labels"><span class="m-title">Architetto (xA)</span><span class="m-tag" style="color:${tXa.c}">${tXa.t}</span></div>
+                        <div class="m-track-bg"><div class="m-fill-bar" style="width: ${pXa}%; background:${tXa.c}"></div></div>
+                    </div>
+                    <div class="merit-row-exact">
+                        <div class="m-labels"><span class="m-title">Motore (Chain)</span><span class="m-tag" style="color:${tChain.c}">${tChain.t}</span></div>
+                        <div class="m-track-bg"><div class="m-fill-bar" style="width: ${pChain}%; background:${tChain.c}"></div></div>
+                    </div>
+                    <div class="merit-row-exact">
+                        <div class="m-labels"><span class="m-title">Costruttore (Build)</span><span class="m-tag" style="color:${tBuild.c}">${tBuild.t}</span></div>
+                        <div class="m-track-bg"><div class="m-fill-bar" style="width: ${pBuild}%; background:${tBuild.c}"></div></div>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        async function executeSearch(defaultName = null) {
+            switchView('finder');
+            const name = defaultName || document.getElementById('globalSearch').value;
+            if(!name) return;
+            
+            document.getElementById('heroTargetName').innerText = name;
+            const container = document.getElementById('clonesContainer');
+            container.innerHTML = `<h3 style="color:var(--text-dim); text-align:center; width:100%;">Ricerca cloni in corso per ${name}...</h3>`;
+            
+            try {
+                const res = await fetch(`${API}/replacement/${encodeURIComponent(name)}`);
+                if (!res.ok) throw new Error("Errore API Cloni");
+                const data = await res.json();
+                if (data.error) throw new Error(data.error);
+                
+                container.innerHTML = data.map(p => generateCardHTML(p)).join('');
+            } catch (e) {
+                container.innerHTML = `<h3 style="color:red; text-align:center; width:100%;">Backend offline o errore nella rotta cloni: ${e.message}</h3>`;
+            }
+        }
+
+        async function loadUndervaluedCategory(category, btnElement) {
+            currentUndervaluedCategory = category;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            if(btnElement) btnElement.classList.add('active');
+            refreshUndervalued();
+        }
+
+        async function refreshUndervalued() {
+            const container = document.getElementById('undervaluedContainer');
+            container.innerHTML = `<h3 style="color:var(--text-dim); text-align:center; width:100%;">Elaborazione dati e filtro lega in corso...</h3>`;
+            
+            const isTrap = currentUndervaluedCategory.includes('trap');
+            const leagueId = document.getElementById('leagueFilter').value;
+
+            try {
+                const res = await fetch(`${API}/api/undervalued?category=${currentUndervaluedCategory}&league_id=${leagueId}&size=100`);
+                if(!res.ok) throw new Error("Rotta sottovalutati non trovata");
+                const data = await res.json();
+                if (data.error) throw new Error(data.error);
+                
+                container.innerHTML = data.map(p => generateUndervaluedCardHTML(p, isTrap)).join('');
+            } catch (e) {
+                container.innerHTML = `<h3 style="color:red; text-align:center; width:100%;">Nessun dato o errore: ${e.message}</h3>`;
+            }
+        }
+
+        function generateUndervaluedCardHTML(p, isTrap = false) {
+            const xg_debt = p.xG_debt || p.xg_debt || (p.xG - p.goals).toFixed(2);
+            const borderColor = isTrap ? 'rgba(255, 71, 87, 0.3)' : 'rgba(46, 213, 115, 0.3)';
+            const titleColor = isTrap ? '#ff4757' : '#2ed573';
+            
+            return `
+            <div class="f-card" onclick="selezionaGiocatore('${p.player.replace(/'/g, "\\'")}')" style="border-top: 4px solid ${borderColor}">
+                <div class="card-header-exact" style="margin-bottom: 15px;">
+                    <div class="p-name-box">
+                        <h3>${p.player}</h3>
+                        <p style="color: ${titleColor};">ANALISI SOTTOVALUTATI</p>
+                    </div>
+                </div>
+                <div class="stats-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div style="background:#f8f9fa; padding:10px; border-radius:8px; text-align:center;">
+                        <span style="font-size:10px; color:var(--text-dim); text-transform:uppercase; display:block;">Minuti</span>
+                        <strong style="font-size:18px;">${p.time || 0}'</strong>
+                    </div>
+                    <div style="background:#f8f9fa; padding:10px; border-radius:8px; text-align:center;">
+                        <span style="font-size:10px; color:var(--text-dim); text-transform:uppercase; display:block;">Gol Fatti</span>
+                        <strong style="font-size:18px;">${p.goals || 0}</strong>
+                    </div>
+                    <div style="background:#f8f9fa; padding:10px; border-radius:8px; text-align:center;">
+                        <span style="font-size:10px; color:var(--text-dim); text-transform:uppercase; display:block;">Expected Goals (xG)</span>
+                        <strong style="font-size:18px;">${p.xG || 0}</strong>
+                    </div>
+                    <div style="background:#f8f9fa; padding:10px; border-radius:8px; text-align:center; border: 1px solid ${borderColor};">
+                        <span style="font-size:10px; color:${titleColor}; text-transform:uppercase; font-weight:800; display:block;">Debito xG</span>
+                        <strong style="font-size:18px; color:${titleColor};">${xg_debt}</strong>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        async function loadPlayerProfile(playerName) {
+            if(!playerName) return;
+            switchView('player');
+            
+            const container = document.getElementById('player-profile-container');
+            const statusDiv = document.getElementById('player-profile-status');
+            
+            container.style.display = 'none';
+            statusDiv.style.display = 'block';
+            statusDiv.innerHTML = `<h3>Recupero dati per ${playerName} dal database...</h3>`;
+
+            try {
+                const profileRes = await fetch(`${API}/api/scout/player/${encodeURIComponent(playerName)}`);
+                if (!profileRes.ok) throw new Error(`HTTP Status: ${profileRes.status}`);
+                const pData = await profileRes.json();
+
+                const shotsRes = await fetch(`${API}/api/shots/${encodeURIComponent(playerName)}`);
+                if (!shotsRes.ok) throw new Error("Dati tiri non trovati");
+                const sData = await shotsRes.json();
+
+                document.getElementById('p-name').innerText = playerName.toUpperCase();
+                
+                let teamName = pData.team || "default";
+                if (teamName.toLowerCase() === "home" || teamName.toLowerCase() === "away" || teamName.toLowerCase() === playerName.toLowerCase()) {
+                    teamName = "default";
+                }
+
+                function toTitleCase(str) {
+                    return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+                }
+
+                const eccezioni = {
+                    "MILAN": "AC Milan",
+                    "AC MILAN": "AC Milan",
+                    "ATHLETIC BILBAO": "athletic club", 
+                    "ATHLETIC CLUB": "athletic club"
+                };
+
+                const finalFileName = eccezioni[teamName.toUpperCase()] || toTitleCase(teamName);
+
+                document.getElementById('p-team-logo').src = `./public/logos/${finalFileName}.png`;
+                document.getElementById('p-team-logo').style.display = 'block';
+                
+                const teamNameEl = document.getElementById('p-team-name');
+                if(teamNameEl) {
+                    teamNameEl.innerText = teamName !== "default" ? pData.team : "Squadra Non Disponibile";
+                }
+
+                document.getElementById('p-league').innerText = pData.league || "Unknown League";
+                document.getElementById('p-age').innerText = pData.age || "--";
+                document.getElementById('p-foot').innerText = pData.foot || "--";
+                document.getElementById('p-mins').innerText = (pData.mins || 0) + "'";
+                
+                const roleMap = {
+                    "Sub": "Subentrato",
+                    "DC": "Difensore Centrale",
+                    "MC": "Centrocampista",
+                    "FW": "Attaccante Centrale",
+                    "GK": "Portiere",
+                    "DR": "Terzino Destro",
+                    "DL": "Terzino Sinistro",
+                    "DMC": "Mediano",
+                    "AMC": "Trequartista",
+                    "AML": "Ala Sinistra (Treq)",
+                    "AMR": "Ala Destra (Treq)",
+                    "DML": "Esterno Sinistro",
+                    "DMR": "Esterno Destro",
+                    "ML": "Centrocampista Sinistro",
+                    "MR": "Centrocampista Destro",
+                    "FWR": "Ala Destra (Att)",
+                    "FWL": "Ala Sinistra (Att)"
+                };
+                
+                const rawRole = pData.role || "N/A";
+                document.getElementById('p-role').innerText = roleMap[rawRole] || rawRole;
+                document.getElementById('p-ai-verdict').innerText = pData.ai_verdict || "Nessun verdetto generato.";
+                document.getElementById('p-ctx-poss').innerText = pData.team_poss || "--";
+                document.getElementById('p-ctx-ppda').innerText = pData.team_ppda || "--";
+
+                document.getElementById('p-metrics-matrix').innerHTML = `
+                    <div class="metric-tile top-tier"><span class="tile-val" style="color: var(--brand-magenta);">${pData.xg90 || 0}</span><span class="tile-lbl">Exp. Goals (xG)</span></div>
+                    <div class="metric-tile top-tier"><span class="tile-val" style="color: var(--status-success);">${pData.eff || 0}</span><span class="tile-lbl">Efficiency Score</span></div>
+                    <div class="metric-tile"><span class="tile-val" style="color: var(--brand-blue);">${pData.xa90 || 0}</span><span class="tile-lbl">Exp. Assists (xA)</span></div>
+                    <div class="metric-tile"><span class="tile-val">${pData.shots90 || 0}</span><span class="tile-lbl">Shots / 90</span></div>
+                    <div class="metric-tile"><span class="tile-val">${pData.kp90 || 0}</span><span class="tile-lbl">Key Passes</span></div>
+                    <div class="metric-tile"><span class="tile-val">${pData.chain || 0}</span><span class="tile-lbl">xG Chain</span></div>
+                    <div class="metric-tile"><span class="tile-val">${pData.build || 0}</span><span class="tile-lbl">xG Buildup</span></div>
+                    <div class="metric-tile"><span class="tile-val">${pData.cards || '0/0'}</span><span class="tile-lbl">Yellow / Red</span></div>
+                `;
+
+                if(pData.dna) {
+                    document.getElementById('p-dna-body').innerHTML = `
+                        <tr><td>Piede Destro</td><td>${pData.dna.right_24 || 0}</td><td>${pData.dna.right_25 || 0}</td><td>${pData.dna.right_26 || 0}</td><td>${pData.dna.right_tot || 0}</td></tr>
+                        <tr><td>Piede Sinistro</td><td>${pData.dna.left_24 || 0}</td><td>${pData.dna.left_25 || 0}</td><td>${pData.dna.left_26 || 0}</td><td>${pData.dna.left_tot || 0}</td></tr>
+                        <tr><td>Testa</td><td>${pData.dna.head_24 || 0}</td><td>${pData.dna.head_25 || 0}</td><td>${pData.dna.head_26 || 0}</td><td>${pData.dna.head_tot || 0}</td></tr>
+                    `;
+                }
+
+                if(pData.radar && pData.trend_xg && pData.trend_xa) {
+                    updateProfileCharts(pData.radar, pData.trend_xg, pData.trend_xa);
+                }
+
+                statusDiv.style.display = 'none';
+                container.style.display = 'grid';
+
+                currentShotsData = sData; 
+                drawInteractivePitch();
+
+            } catch (error) {
+                statusDiv.innerHTML = `<h3 style="color:red;">Errore Backend: ${error.message}</h3>`;
+            }
+        }
+
+        function updateProfileCharts(radarData, trendXg, trendXa) {
+            if (radarChartInstance) radarChartInstance.destroy();
+            if (trendChartInstance) trendChartInstance.destroy();
+
+            radarChartInstance = new Chart(document.getElementById('scoutRadarChart'), {
+                type: 'radar',
+                data: {
+                    labels: ['Finishing', 'Creation', 'Dribbling', 'xGChain', 'Link-up', 'Defense'],
+                    datasets: [{
+                        data: radarData, backgroundColor: 'rgba(0, 122, 255, 0.1)', borderColor: '#007aff', borderWidth: 2, pointRadius: 0
+                    }]
+                },
+                options: { maintainAspectRatio: false, scales: { r: { grid: { color: 'rgba(0,0,0,0.05)' }, angleLines: { color: 'rgba(0,0,0,0.05)' }, ticks: { display: false }, suggestedMin: 0, suggestedMax: 100 } }, plugins: { legend: { display: false } } }
+            });
+
+            trendChartInstance = new Chart(document.getElementById('growthTrendChart'), {
+                type: 'line',
+                data: {
+                    labels: ['23/24', '24/25', '25/26'],
+                    datasets: [
+                        { label: 'xG/90', data: trendXg, borderColor: '#ff2a5f', tension: 0.4, fill: false, borderWidth: 3 },
+                        { label: 'xA/90', data: trendXa, borderColor: '#007aff', tension: 0.4, fill: false, borderWidth: 3 }
+                    ]
+                },
+                options: { maintainAspectRatio: false, plugins: { legend: { position: 'top', align: 'end' } }, scales: { y: { grid: { color: 'rgba(0,0,0,0.05)' } }, x: { grid: { display: false } } } }
+            });
+        }
+
+        const canvas = document.getElementById('scoutShotCanvas');
+        const ctx = canvas.getContext('2d');
+        const tooltip = document.getElementById('shotTooltip');
+
+        function drawInteractivePitch() {
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = 'rgba(0,0,0,0.08)';
+            ctx.lineWidth = 2;
+            
+            const w = canvas.width;
+            const h = canvas.height;
+
+            ctx.strokeRect(w*0.2, 0, w*0.6, h*0.3);
+            ctx.strokeRect(w*0.35, 0, w*0.3, h*0.1);
+            ctx.beginPath();
+            ctx.arc(w*0.5, h*0.3, w*0.15, 0, Math.PI);
+            ctx.stroke();
+
+            if(currentShotsData && currentShotsData.length > 0) {
+                currentShotsData.forEach(s => {
+                    s.cx = s.Y * w; 
+                    s.cy = (1 - s.X) * h; 
+                    s.radius = 4 + (s.xG * 15);
+
+                    ctx.beginPath();
+                    ctx.arc(s.cx, s.cy, s.radius, 0, Math.PI*2);
+                    
+                    if(s.result === 'Goal') {
+                        ctx.fillStyle = '#28a745'; ctx.shadowBlur = 10; ctx.shadowColor = '#28a745';
+                    } else if(s.result === 'MissedShots' || s.result === 'Fuori') {
+                        ctx.fillStyle = '#ff2a5f'; ctx.shadowBlur = 0;
+                    } else {
+                        ctx.fillStyle = '#007aff'; ctx.shadowBlur = 0;
+                    }
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                });
+            }
+        }
+
+        canvas.addEventListener('mousemove', (e) => {
+            if(!currentShotsData || !currentShotsData.length) return;
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            let hovered = null;
+            for(let i=0; i<currentShotsData.length; i++) {
+                const s = currentShotsData[i];
+                const dist = Math.sqrt(Math.pow(mouseX - s.cx, 2) + Math.pow(mouseY - s.cy, 2));
+                if(dist <= s.radius + 2) {
+                    hovered = s;
+                    break;
+                }
+            }
+
+            if(hovered) {
+                canvas.style.cursor = 'pointer';
+                tooltip.style.opacity = 1;
+                tooltip.style.left = (e.clientX - rect.left + 15) + 'px';
+                tooltip.style.top = (e.clientY - rect.top + 15) + 'px';
+                
+                tooltip.innerHTML = `
+                    <div>Minuto: <span class="hl">${hovered.minute}'</span></div>
+                    <div>xG: <span class="hl">${(hovered.xG || 0).toFixed(2)}</span></div>
+                    <div>Risultato: <span class="hl">${hovered.result}</span></div>
+                    <div>Situazione: <span style="color:#aaa;">${hovered.situation}</span></div>
+                `;
+            } else {
+                canvas.style.cursor = 'crosshair';
+                tooltip.style.opacity = 0;
+            }
+        });
+
+        canvas.addEventListener('mouseleave', () => { tooltip.style.opacity = 0; });
+        window.addEventListener('resize', drawInteractivePitch);
+
+        async function executeH2H() {
+            const p1 = document.getElementById('h2h-p1-input').value;
+            const p2 = document.getElementById('h2h-p2-input').value;
+            if(!p1 || !p2) return alert("Inserisci entrambi i giocatori");
+
+            const resultsDiv = document.getElementById('h2h-results');
+            const statusDiv = document.getElementById('h2h-status');
+            
+            resultsDiv.style.display = 'none';
+            statusDiv.style.display = 'block';
+            statusDiv.innerHTML = `<h3>Analisi e fetch radar dal DB in corso...</h3>`;
+            
+            try {
+                const res = await fetch(`${API}/api/h2h?p1=${encodeURIComponent(p1)}&p2=${encodeURIComponent(p2)}`);
+                if(!res.ok) throw new Error("Errore API H2H");
+                const data = await res.json();
+                
+                document.getElementById('h2h-card-1').innerHTML = `<h3>${p1.toUpperCase()}</h3><p style="color:var(--brand-magenta); font-weight:bold;">xG: ${data.p1.xg || 0} | xA: ${data.p1.xa || 0}</p>`;
+                document.getElementById('h2h-card-2').innerHTML = `<h3>${p2.toUpperCase()}</h3><p style="color:var(--brand-blue); font-weight:bold;">xG: ${data.p2.xg || 0} | xA: ${data.p2.xa || 0}</p>`;
+
+                if (h2hRadarInstance) h2hRadarInstance.destroy();
+                h2hRadarInstance = new Chart(document.getElementById('h2hRadarChart'), {
+                    type: 'radar',
+                    data: {
+                        labels: ['Finishing', 'Creation', 'Dribbling', 'xGChain', 'Link-up', 'Defense'],
+                        datasets: [
+                            { label: p1, data: data.p1.radar, backgroundColor: 'rgba(255, 42, 95, 0.2)', borderColor: '#ff2a5f', borderWidth: 2 },
+                            { label: p2, data: data.p2.radar, backgroundColor: 'rgba(0, 122, 255, 0.2)', borderColor: '#007aff', borderWidth: 2 }
+                        ]
+                    },
+                    options: { maintainAspectRatio: false, scales: { r: { suggestedMin: 0, suggestedMax: 100 } } }
+                });
+
+                statusDiv.style.display = 'none';
+                resultsDiv.style.display = 'grid';
+            } catch(e) {
+                statusDiv.innerHTML = `<h3 style="color:red;">Backend offline o errore API: ${e.message}</h3>`;
+            }
+        }
+    </script>
+</body>
+</html>

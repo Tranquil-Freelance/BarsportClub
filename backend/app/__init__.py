@@ -1,0 +1,3 @@
+"""
+xPalermoStat backend application package.
+"""

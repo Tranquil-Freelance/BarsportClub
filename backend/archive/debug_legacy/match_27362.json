@@ -1,0 +1,86 @@
+{
+  "h": [
+    {
+      "minute": 12,
+      "player": "Mateo Retegui",
+      "xG": 0.45,
+      "result": "Goal",
+      "X": 0.852,
+      "Y": 0.458
+    },
+    {
+      "minute": 24,
+      "player": "Ruslan Malinovskyi",
+      "xG": 0.32,
+      "result": "Saved",
+      "X": 0.789,
+      "Y": 0.603
+    },
+    {
+      "minute": 37,
+      "player": "Albert Gudmundsson",
+      "xG": 0.18,
+      "result": "Blocked",
+      "X": 0.721,
+      "Y": 0.305
+    },
+    {
+      "minute": 55,
+      "player": "Stefano Sabelli",
+      "xG": 0.07,
+      "result": "Missed",
+      "X": 0.624,
+      "Y": 0.402
+    },
+    {
+      "minute": 78,
+      "player": "Morten Frendrup",
+      "xG": 0.12,
+      "result": "Saved",
+      "X": 0.857,
+      "Y": 0.512
+    }
+  ],
+  "a": [
+    {
+      "minute": 9,
+      "player": "Lautaro Martínez",
+      "xG": 0.68,
+      "result": "Goal",
+      "X": 0.157,
+      "Y": 0.550
+    },
+    {
+      "minute": 31,
+      "player": "Marcus Thuram",
+      "xG": 0.22,
+      "result": "Saved",
+      "X": 0.224,
+      "Y": 0.402
+    },
+    {
+      "minute": 43,
+      "player": "Hakan Çalhanoğlu",
+      "xG": 0.15,
+      "result": "Blocked",
+      "X": 0.105,
+      "Y": 0.489
+    },
+    {
+      "minute": 62,
+      "player": "Nicolò Barella",
+      "xG": 0.09,
+      "result": "Missed",
+      "X": 0.305,
+      "Y": 0.350
+    },
+    {
+      "minute": 84,
+      "player": "Federico Dimarco",
+      "xG": 0.05,
+      "result": "Missed",
+      "X": 0.124,
+      "Y": 0.280
+    }
+  ]
+}

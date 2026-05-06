@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+venv/
+venv312/
+*.egg-info/
+dist/
+build/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Database
+*.db
+*.sqlite3
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+.idea/
+
+# Node
+node_modules/
+.next/
+
+# OS
+.DS_Store
+*.swp
+*.swo
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Local virtual envs created during setup
+.venv311/
+testvenv/
+
+# Large local artifacts not suitable for GitHub
+backend/backup_full_scout.sql
+backend/html_imports/dbeaver-ce-26.0.1-windows-x86_64.exe

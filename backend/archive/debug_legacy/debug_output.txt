@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+		<base href="https://understat.com/">
+		<title>Genoa 2 - 2 Inter (August 17 2024) | Serie A | 2024/2025 | xG | Understat.com</title>
+        <meta charset="UTF-8" />
+		<meta name="description" content="Genoa 2 - 2 Inter. Check out detailed player statistic, goals, assists, key passes, xG, shot map, xGplot.">
+		<meta name="Keywords" content="Genoa, Inter, Serie A, 2024/2025, (August 17 2024), xG, expected goals, shot map">
+		<meta name="viewport" user-scalable="no" content="width=device-width, maximum-scale=1, initial-scale=1">
+		<script src="https://sdk.adlook.tech/inventory/core.js" async type="text/javascript"></script>
+			<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+	<link rel="manifest" href="manifest.json">
+	<link rel="mask-icon" href="safari-pinned-tab.svg" color="#5bbad5">
+	<meta name="apple-mobile-web-app-title" content="understat">
+	<meta name="application-name" content="understat">
+	<meta name="theme-color" content="#ffffff">
+	<meta http-equiv="cache-control" content="no-cache">
+	<meta http-equiv="expires" content="0">
+	<link href="css/main.min.css?t=1765221332" rel="stylesheet" media="screen">
+    </head>
+    <body class="theme-dark">
+		<script>
+			var THEME = localStorage.getItem("theme") || 'DARK';
+			document.body.className = "theme-" + THEME.toLowerCase();
+		</script>
+        	<div class="wrapper">
+				<header id="header" class="clearfix">
+			<div class="header-wrapper">
+					<span class="block-match-result">
+		<h1>
+			<a href="https://understat.com/team/Genoa/2024">Genoa</a> 2 - 2<a href="https://understat.com/team/Inter/2024">Inter</a>
+		</h1>
+	</span>
+				<nav class="m-navigation-main">
+					<input class="toggle" id="toggle" type="checkbox">
+					<label class="toggle" for="toggle">
+						<div class="line-wrap">
+							<div class="line top"></div>
+							<div class="line center"></div>
+							<div class="line bottom"></div>
+						</div>
+					</label>
+					<ul class="h-inner">
+						<li class="player-search">
+							<input name="player-search" class="typeahead" type="search" placeholder="Find player by name" />
+							<span class="icon"><i class="fa fa-search"></i></span>
+							<!--
+							<div class="li-container">
+								<div class="li-inner">
+									<input class="typeahead" type="search" placeholder="Find player by name" />
+									<span class="icon"><i class="fa fa-search"></i></span>
+								</div>
+							</div>
+							-->
+						</li>
+						<li>
+							<a href="" class="menu-link ">
+								<span class="link-icon" title="Main page">
+									<i class="fas fa-home" aria-hidden="true"></i>
+								</span>
+								<span class="menu-title">
+									<span class="link-icon">
+										<i class="fas fa-home" aria-hidden="true"></i>
+									</span>
+									Main page
+								</span>
+							</a>
+						</li>
+						<li>
+							<a href="office" class="menu-link ">
+								<span class="link-icon" title="Personal cabinet">
+									<i class="fas fa-sign-in-alt" aria-hidden="true"></i>
+								</span>
+								<span class="menu-title">
+									<span class="link-icon">
+										<i class="fas fa-sign-in-alt" aria-hidden="true"></i>
+									</span>
+									Personal cabinet
+								</span>
+							</a>
+						</li>
+					</ul>
+				</nav>
+			</div>
+		</header>
+		
+		<div id="preloader" class="preloader">
+			<div class="preloader-container">
+				<div class="circ1"><div></div></div>
+				<div class="circ2"><div></div></div>
+				<div class="circ3"><div></div></div>
+				<div class="circ4"><div></div></div>
+			</div>
+		</div>
+		
+		<div id="table-preloader" class="preloader table-preloader is-hide">
+			<div class="preloader-container">
+				<div class="circ1"><div></div></div>
+				<div class="circ2"><div></div></div>
+				<div class="circ3"><div></div></div>
+				<div class="circ4"><div></div></div>
+			</div>
+		</div>
+		
+		<input id="themes-switch" type="checkbox" name="themes-switch" checked>
+		<label for="themes-switch" title="Change theme"></label>
+		
+		<div class="page-wrapper">
+										<div class="promotion">
+				<ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-7470116180195095" data-ad-slot="2199699885" data-ad-format="auto" data-full-width-responsive="true"></ins>
+			</div>
+										<ul class="breadcrumb">
+	<li><a href="https://understat.com/">Home</a></li>
+	<li><a href="league/Serie_A/2024">Serie A</a></li>
+	<li>Aug 17 2024</li>
+</ul>
+			<div class="block">
+	<div class="block-content is-hide">
+		<div class="block-match">
+			<div class="filters">
+	<div class="filter">
+		<input id="scheme1" type="radio" name="scheme" value="field" checked />
+		<label for="scheme1">Field</label>
+				<input id="scheme2" type="radio" name="scheme" value="chart" />
+		<label for="scheme2">Timing chart</label>
+		<input id="scheme3" type="radio" name="scheme" value="stats" />
+		<label for="scheme3">Stats</label>
+			</div>
+</div>
+
+<div class="scheme-block" data-scheme="field">
+	<canvas id="field"></canvas>
+	<i class="icon-full-screen"></i>
+	<div id="note" style="display:none;"></div>
+</div>
+
+<div class="scheme-block is-hide" data-scheme="chart">
+	<div class="chart-container-match">
+		<canvas id="chart"></canvas>
+	</div>
+	<div class="chartjs-tooltip is-hide team-home"></div>
+	<div class="chartjs-tooltip is-hide team-away"></div>
+</div>
+
+<div class="scheme-block is-hide" data-scheme="stats">
+		<div class="progress-bar teams-titles">
+		<div class="progress-title">TEAMS</div>
+		<div class="progress-home progress-over" style="width: 50%">
+			<div class="progress-value">Genoa</div>
+		</div>
+		<div class="progress-away" style="width: 50%; left: 50%">
+			<div class="progress-value">Inter</div>
+		</div>
+	</div>
+	
+	<div class="progress-bar">
+		<div class="progress-title">CHANCES</div>
+		<div class="progress-home" style="width: 46%" title="46%">
+			<div class="progress-value">46<small>%</small></div>
+		</div>
+		<div class="progress-draw" style="width: 26%; left: 46%" title="26%">
+			<div class="progress-value">26<small>%</small></div>
+		</div>
+		<div class="progress-away" style="width: 28%" title="28%">
+			<div class="progress-value">28<small>%</small></div>
+		</div>
+	</div>
+	
+	<div class="progress-bar">
+		<div class="progress-title">GOALS</div>
+		<div class="progress-home progress-over" style="width: 50%" title="50%">
+			<div class="progress-value">2</div>
+		</div>
+		<div class="progress-away" style="width: 50%; left: 50%" title="50%">
+			<div class="progress-value">2</div>
+		</div>
+	</div>
+	
+	<div class="progress-bar">
+		<div class="progress-title">xG</div>
+		<div class="progress-home progress-over" style="width: 53.545614920522%" title="54%">
+			<div class="progress-value">2<span class="progress-value-decimal">.31</span></div>
+		</div>
+		<div class="progress-away" style="width: 46.454385079478%; left: 53.545614920522%" title="46%">
+			<div class="progress-value">2<span class="progress-value-decimal">.01</span></div>
+		</div>
+	</div>
+		
+	<div class="progress-bar">
+		<div class="progress-title">SHOTS</div>
+		<div class="progress-home" style="width: 43.333333333333%"  title="43%">
+			<div class="progress-value">13</div>
+		</div>
+		<div class="progress-away progress-over" style="width: 56.666666666667%; left: 43.333333333333%" title="57%">
+			<div class="progress-value">17</div>
+		</div>
+	</div>
+		
+	<div class="progress-bar">
+		<div class="progress-title">SHOTS ON TARGET</div>
+		<div class="progress-home" style="width: 46.666666666667%" title="47%">
+			<div class="progress-value">7</div>
+		</div>
+		<div class="progress-away progress-over" style="width: 53.333333333333%; left: 46.666666666667%" title="53%">
+			<div class="progress-value">8</div>
+		</div>
+	</div>
+	
+	<div class="progress-bar">
+		<div class="progress-title" title="Passes completed within an estimated 20 yards of goal (crosses excluded)">DEEP</div>
+		<div class="progress-home" style="width: 22.222222222222%" title="22%">
+			<div class="progress-value">2</div>
+		</div>
+		<div class="progress-away progress-over" style="width: 77.777777777778%; left: 22.222222222222%" title="78%">
+			<div class="progress-value">7</div>
+		</div>
+	</div>
+		
+	<div class="progress-bar">
+		<div class="progress-title" title="Passes allowed per defensive action in the opposition half">PPDA</div>
+		<div class="progress-home" style="width: 28.740647193302%" title="29%">
+			<div class="progress-value">18<span class="progress-value-decimal">.73</span></div>
+		</div>
+		<div class="progress-away progress-over" style="width: 71.259352806698%; left: 28.740647193302%" title="71%">
+			<div class="progress-value">7<span class="progress-value-decimal">.56</span></div>
+		</div>
+	</div>
+	
+	<div class="progress-bar">
+		<div class="progress-title" title="Expected points">xPTS</div>
+		<div class="progress-home progress-over" style="width: 59.891618761671%" title="60%">
+			<div class="progress-value">1<span class="progress-value-decimal">.64</span></div>
+		</div>
+		<div class="progress-away" style="width: 40.108381238329%; left: 59.891618761671%" title="40%">
+			<div class="progress-value">1<span class="progress-value-decimal">.10</span></div>
+		</div>
+	</div>
+</div>
+<script>
+	var match_info 	= JSON.parse('\x7B\x22id\x22\x3A\x2227362\x22,\x22fid\x22\x3A\x221834862\x22,\x22h\x22\x3A\x22101\x22,\x22a\x22\x3A\x22106\x22,\x22date\x22\x3A\x222024\x2D08\x2D17\x2016\x3A30\x3A00\x22,\x22league_id\x22\x3A\x222\x22,\x22season\x22\x3A\x222024\x22,\x22h_goals\x22\x3A\x222\x22,\x22a_goals\x22\x3A\x222\x22,\x22team_h\x22\x3A\x22Genoa\x22,\x22team_a\x22\x3A\x22Inter\x22,\x22h_xg\x22\x3A\x222.31286\x22,\x22a_xg\x22\x3A\x222.00656\x22,\x22h_w\x22\x3A\x220.4556\x22,\x22h_d\x22\x3A\x220.2689\x22,\x22h_l\x22\x3A\x220.2755\x22,\x22league\x22\x3A\x22Serie\x20A\x22,\x22h_shot\x22\x3A\x2213\x22,\x22a_shot\x22\x3A\x2217\x22,\x22h_shotOnTarget\x22\x3A\x227\x22,\x22a_shotOnTarget\x22\x3A\x228\x22,\x22h_deep\

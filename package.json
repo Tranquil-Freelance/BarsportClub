@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "echarts": "^6.0.0",
+    "echarts-for-react": "^3.0.6",
+    "framer-motion": "^12.36.0",
+    "lucide-react": "^0.577.0"
+  }
+}

@@ -1,0 +1,15 @@
+[Unit]
+Description=Barsport Scout Engine - Automated Scraper Scheduler
+After=network.target postgresql.service
+
+[Service]
+User=ubuntu
+WorkingDirectory=/home/ubuntu/claude-of-control/backend
+ExecStart=/home/ubuntu/venv312/bin/python scheduler.py
+Restart=always
+RestartSec=60
+StandardOutput=append:/var/log/barsport/scheduler.log
+StandardError=append:/var/log/barsport/scheduler.log
+
+[Install]
+WantedBy=multi-user.target

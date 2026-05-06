@@ -1,0 +1,174 @@
+import time
+import random
+import logging
+import json
+from DrissionPage import ChromiumPage, ChromiumOptions
+from sqlalchemy import create_engine, text
+
+# ==========================================
+# CONFIGURAZIONE MANIACALE - STAGIONE 2025
+# ==========================================
+DB_URI = "postgresql://postgres:password@localhost:5432/xpalermostat"
+engine = create_engine(DB_URI)
+
+logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
+
+TARGET_LEAGUES = ['Serie_A', 'EPL', 'La_liga', 'Bundesliga', 'Ligue_1']
+SEASON = '2025'
+
+# Parametri Anti-Ban originali
+JITTER_MIN = 3.5
+JITTER_MAX = 7.5
+HIBERNATION_PERIOD = 1800 
+
+def safe_float(val):
+    try: return float(val)
+    except: return 0.0
+
+def safe_int(val):
+    try: return int(val)
+    except: return 0
+
+def get_ppda(p):
+    if not p: return 0.0
+    att = safe_float(p.get('att'))
+    df = safe_float(p.get('def'))
+    return att / df if df > 0 else 0.0
+
+def sync_2025_with_advanced_metrics():
+    logging.info(f"🚀 AVVIO SISTEMA INTEGRATO - RECUPERO DATI AVANZATI LEGA + MATCH")
+    
+    co = ChromiumOptions()
+    co.set_user_agent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36')
+    page = ChromiumPage(co)
+
+    for league in TARGET_LEAGUES:
+        time.sleep(random.uniform(JITTER_MIN, JITTER_MAX))
+        league_url = f"https://understat.com/league/{league}/{SEASON}"
+        
+        try:
+            page.get(league_url)
+            
+            # Controllo Ban Livello 2
+            if "429" in page.html or "too many requests" in page.html.lower():
+                logging.warning("🚨 BAN RILEVATO. IBERNAZIONE 30 MINUTI.")
+                time.sleep(HIBERNATION_PERIOD)
+                page.get(league_url)
+
+            # Scrolling per caricare i JSON window
+            page.scroll.down(1000)
+            time.sleep(2)
+
+            # ESTRAZIONE MACRO (Dati Avanzati Teams + Calendario)
+            # Usiamo la console F12 per prendere teamsData e datesData
+            raw_league_json = page.run_js("""
+                if(typeof window.teamsData !== 'undefined' && typeof window.datesData !== 'undefined'){
+                    return JSON.stringify({t: window.teamsData, d: window.datesData});
+                }
+                return null;
+            """)
+
+            if not raw_league_json:
+                logging.warning(f"⚠️ Impossibile trovare teamsData per {league}. Salto.")
+                continue
+
+            league_data = json.loads(raw_league_json)
+            teams_dict = league_data['t']
+            dates_list = league_data['d']
+
+            # OPZIONE A: Identificazione ultima giornata
+            target_round = max([safe_int(m.get('matchday')) for m in dates_list if m.get('isResult')])
+            matches_to_process = [m for m in dates_list if safe_int(m.get('matchday')) == target_round and m.get('isResult')]
+
+            logging.info(f"📊 {league}: Elaborazione Giornata {target_round} ({len(matches_to_process)} match)")
+
+            with engine.begin() as conn:
+                for m in matches_to_process:
+                    m_id = int(m['id'])
+                    m_date = m['datetime']
+                    h_id, a_id = str(m['h']['id']), str(m['a']['id'])
+
+                    # Recupero dati avanzati dal JSON teamsData -> history
+                    # Cerchiamo il match nella history della squadra per data
+                    h_stats = next((h for h in teams_dict[h_id]['history'] if h['date'] == m_date), {})
+                    a_stats = next((h for h in teams_dict[a_id]['history'] if h['date'] == m_date), {})
+
+                    # Update dati avanzati in matchcalendar
+                    conn.execute(text("""
+                        UPDATE matchcalendar SET
+                            home_ppda = :h_ppda, away_ppda = :a_ppda,
+                            home_deep = :h_deep, away_deep = :a_deep,
+                            home_xpts = :h_xpts, away_xpts = :a_xpts,
+                            matchday = :md, is_completed = TRUE
+                        WHERE id = :id
+                    """), {
+                        "id": m_id, "md": target_round,
+                        "h_ppda": get_ppda(h_stats.get('ppda')), "a_ppda": get_ppda(a_stats.get('ppda')),
+                        "h_deep": safe_int(h_stats.get('deep')), "a_deep": safe_int(a_stats.get('deep')),
+                        "h_xpts": safe_float(h_stats.get('xpts')), "a_xpts": safe_float(a_stats.get('xpts'))
+                    })
+
+            # FASE MICRO: SHOTS E ROSTERS (Solo per i match mancanti della giornata)
+            for m in matches_to_process:
+                m_id = int(m['id'])
+                
+                with engine.connect() as conn:
+                    is_done = conn.execute(text("SELECT is_scraped FROM matchcalendar WHERE id = :id"), {"id": m_id}).fetchone()
+                    if is_done and is_done[0]: continue
+
+                time.sleep(random.uniform(JITTER_MIN, JITTER_MAX))
+                page.get(f"https://understat.com/match/{m_id}")
+                page.scroll.down(500)
+                time.sleep(2)
+
+                # Estrazione Micro via Console F12
+                raw_match_json = page.run_js("""
+                    if(typeof window.shotsData !== 'undefined' && typeof window.rostersData !== 'undefined'){
+                        return JSON.stringify({s: window.shotsData, r: window.rostersData});
+                    }
+                    return null;
+                """)
+
+                if raw_match_json:
+                    m_json = json.loads(raw_match_json)
+                    with engine.begin() as conn:
+                        conn.execute(text("DELETE FROM shots WHERE match_id = :id"), {"id": m_id})
+                        conn.execute(text("DELETE FROM rosters WHERE match_id = :id"), {"id": m_id})
+
+                        # Inserimento Tiri
+                        for side in ['h', 'a']:
+                            for s in m_json['s'].get(side, []):
+                                conn.execute(text("""
+                                    INSERT INTO shots (match_id, player_id, player, minute, "xG", "X", "Y", result, team_type, situation, "shotType", "lastAction")
+                                    VALUES (:m_id, :p_id, :p, :min, :xg, :x, :y, :res, :side, :sit, :st, :la)
+                                """), {
+                                    "m_id": m_id, "p_id": safe_int(s.get('player_id')), "p": s.get('player'),
+                                    "min": safe_int(s.get('minute')), "xg": safe_float(s.get('xG')),
+                                    "x": safe_float(s.get('X')), "y": safe_float(s.get('Y')), "res": s.get('result'),
+                                    "side": 'home' if side == 'h' else 'away', "sit": s.get('situation'), 
+                                    "st": s.get('shotType'), "la": s.get('lastAction')
+                                })
+
+                        # Inserimento Rosters
+                        for side in ['h', 'a']:
+                            for r in m_json['r'].get(side, {}).values():
+                                conn.execute(text("""
+                                    INSERT INTO rosters (match_id, player_id, player, position, "time", goals, assists, shots, key_passes, "xG", "xA")
+                                    VALUES (:m_id, :p_id, :p, :pos, :t, :g, :as, :sh, :kp, :xg, :xa)
+                                """), {
+                                    "m_id": m_id, "p_id": safe_int(r.get('player_id')), "p": r.get('player'),
+                                    "pos": r.get('position'), "t": safe_int(r.get('time')), "g": safe_int(r.get('goals')),
+                                    "as": safe_int(r.get('assists')), "sh": safe_int(r.get('shots')), 
+                                    "kp": safe_int(r.get('key_passes')), "xg": safe_float(r.get('xG')), "xa": safe_float(r.get('xA'))
+                                })
+                        
+                        conn.execute(text("UPDATE matchcalendar SET is_scraped = TRUE WHERE id = :id"), {"id": m_id})
+                        logging.info(f"✅ Dati completi (Avanzati + Micro) per Match {m_id} salvati.")
+
+        except Exception as e:
+            logging.error(f"❌ Errore critico su {league}: {e}")
+
+    page.quit()
+
+if __name__ == "__main__":
+    sync_2025_with_advanced_metrics()
