@@ -22,6 +22,7 @@ type Match = {
 const LEAGUE_NAME = "La Liga";
 const LEAGUE_SLUG = "la-liga";
 const CURRENT_SEASON = "2025/2026";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export default function LeaguePage() {
   const { t } = useTranslation();
@@ -34,8 +35,8 @@ export default function LeaguePage() {
       setLoading(true);
       try {
         const [matchRes, standRes] = await Promise.all([
-          fetch(`http://localhost:8000/api/meritometro/season?league=${encodeURIComponent(LEAGUE_NAME)}&season=${encodeURIComponent(CURRENT_SEASON)}`),
-          fetch(`http://localhost:8000/api/meritometro/standings?league=${encodeURIComponent(LEAGUE_NAME)}&season=${encodeURIComponent(CURRENT_SEASON)}`)
+          fetch(`${API_BASE}/api/meritometro/season?league=${encodeURIComponent(LEAGUE_NAME)}&season=${encodeURIComponent(CURRENT_SEASON)}`),
+          fetch(`${API_BASE}/api/meritometro/standings?league=${encodeURIComponent(LEAGUE_NAME)}&season=${encodeURIComponent(CURRENT_SEASON)}`)
         ]);
         if (matchRes.ok) {
           const data = await matchRes.json();

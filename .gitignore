@@ -46,3 +46,13 @@ testvenv/
 # Large local artifacts not suitable for GitHub
 backend/backup_full_scout.sql
 backend/html_imports/dbeaver-ce-26.0.1-windows-x86_64.exe
+
+# Cursor/local workspace artifacts
+.claude/
+.superpowers/
+backend/.claude/
+frontend/.claude/
+backend/server_log.txt
+
+# Large duplicate workspace folder (local copy only)
+xpalermostat - Copy/

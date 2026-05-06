@@ -14,6 +14,7 @@ const LEAGUES = [
   { name: "Bundesliga", id: "Bundesliga", logo: "/leagues/bundesliga.png" },
   { name: "Ligue 1", id: "Ligue 1", logo: "/leagues/ligue1.png" },
 ];
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 type Match = {
   id: string; home: string; away: string;
@@ -50,8 +51,8 @@ export default function MeritometroPage() {
       setLoading(true);
       try {
         const [mRes, rRes] = await Promise.all([
-          fetch(`http://localhost:8000/api/meritometro/season?league=${encodeURIComponent(activeLeague)}`),
-          fetch(`http://localhost:8000/api/meritometro/imr_standings?league=${encodeURIComponent(activeLeague)}`)
+          fetch(`${API_BASE}/api/meritometro/season?league=${encodeURIComponent(activeLeague)}`),
+          fetch(`${API_BASE}/api/meritometro/imr_standings?league=${encodeURIComponent(activeLeague)}`)
         ]);
         if (mRes.ok) setMatches(await mRes.json());
         if (rRes.ok) setImrRanking(await rRes.json());

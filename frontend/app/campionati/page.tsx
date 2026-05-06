@@ -26,6 +26,7 @@ const LEAGUES_DATA = [
   { name: "Bundesliga", logo: "/leagues/bundesliga.png" },
   { name: "Ligue 1", logo: "/leagues/ligue1.png" },
 ];
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 // Impostiamo la stagione corrente per forzare il backend a filtrare la spazzatura
 const CURRENT_SEASON = "2025/2026"; 
@@ -53,8 +54,8 @@ export default function CampionatiPage() {
       try {
         // FORZIAMO IL PARAMETRO SEASON PER EVITARE I 491 PUNTI STORICI
         const [matchRes, standingsRes] = await Promise.all([
-          fetch(`http://localhost:8000/api/meritometro/season?league=${encodeURIComponent(activeLeague)}&season=${encodeURIComponent(CURRENT_SEASON)}`),
-          fetch(`http://localhost:8000/api/meritometro/standings?league=${encodeURIComponent(activeLeague)}&season=${encodeURIComponent(CURRENT_SEASON)}`)
+          fetch(`${API_BASE}/api/meritometro/season?league=${encodeURIComponent(activeLeague)}&season=${encodeURIComponent(CURRENT_SEASON)}`),
+          fetch(`${API_BASE}/api/meritometro/standings?league=${encodeURIComponent(activeLeague)}&season=${encodeURIComponent(CURRENT_SEASON)}`)
         ]);
 
         if (ignore) return;
