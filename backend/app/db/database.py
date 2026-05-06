@@ -3,6 +3,7 @@ Async database connection and session management for xPalermoStat.
 Single shared engine — all modules import from here.
 """
 import os
+from pathlib import Path
 from typing import AsyncGenerator
 
 from dotenv import load_dotenv
@@ -13,7 +14,12 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy.orm import declarative_base
 
-load_dotenv()
+# Always load backend/.env so DATABASE_URL matches restore target even if cwd is repo root
+_backend_env = Path(__file__).resolve().parents[2] / ".env"
+if _backend_env.is_file():
+    load_dotenv(_backend_env, override=True)
+else:
+    load_dotenv()
 
 DATABASE_URL = os.getenv(
     "DATABASE_URL",

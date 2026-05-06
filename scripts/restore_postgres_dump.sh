@@ -62,9 +62,19 @@ if [[ -z "$PSQL" ]]; then
   exit 1
 fi
 
-PG_RESTORE="$(command -v pg_restore || true)"
-if [[ -z "$PG_RESTORE" && -x /opt/homebrew/opt/postgresql@15/bin/pg_restore ]]; then
-  PG_RESTORE="/opt/homebrew/opt/postgresql@15/bin/pg_restore"
+# Prefer newest Homebrew pg_restore (PG16 dumps need PG16+ client even if server is older)
+PG_RESTORE=""
+for CAND in \
+  /opt/homebrew/opt/postgresql@17/bin/pg_restore \
+  /opt/homebrew/opt/postgresql@16/bin/pg_restore \
+  /opt/homebrew/opt/postgresql@15/bin/pg_restore; do
+  if [[ -x "$CAND" ]]; then
+    PG_RESTORE="$CAND"
+    break
+  fi
+done
+if [[ -z "$PG_RESTORE" ]]; then
+  PG_RESTORE="$(command -v pg_restore || true)"
 fi
 
 echo "→ Host: $PGHOST:$PGPORT  User: $PGUSER  Target DB: $TARGET_DB"
@@ -81,25 +91,40 @@ SQL
 "$PSQL" -d postgres -v ON_ERROR_STOP=1 -c "CREATE DATABASE \"${TARGET_DB}\" OWNER \"${PGUSER}\";"
 
 EXT="${DUMP_PATH##*.}"
+# Custom-format pg_dump (-Fc) files are often misnamed as .sql — detect by magic bytes
+DUMP_KIND="plain"
+if command -v file >/dev/null 2>&1 && file -b "$DUMP_PATH" 2>/dev/null | grep -qi 'PostgreSQL custom database dump'; then
+  DUMP_KIND="custom"
+fi
+
 shopt -s nocasematch
-case "$EXT" in
-  sql)
-    echo "→ Restoring plain SQL with psql..."
-    "$PSQL" -d "$TARGET_DB" -v ON_ERROR_STOP=1 -f "$DUMP_PATH"
-    ;;
-  dump|backup)
-    if [[ -z "$PG_RESTORE" ]]; then
-      echo "pg_restore not found; install postgresql client tools." >&2
-      exit 1
-    fi
-    echo "→ Restoring custom-format archive with pg_restore..."
-    "$PG_RESTORE" --verbose --no-owner --no-acl -d "$TARGET_DB" "$DUMP_PATH"
-    ;;
-  *)
-    echo "Unknown extension .$EXT — use .sql or custom .dump from pg_dump -Fc" >&2
+if [[ "$DUMP_KIND" == "custom" ]]; then
+  if [[ -z "$PG_RESTORE" ]]; then
+    echo "pg_restore not found; install postgresql client tools." >&2
     exit 1
-    ;;
-esac
+  fi
+  echo "→ Restoring custom-format archive with pg_restore..."
+  "$PG_RESTORE" --verbose --no-owner --no-acl -d "$TARGET_DB" "$DUMP_PATH"
+else
+  case "$EXT" in
+    sql)
+      echo "→ Restoring plain SQL with psql..."
+      "$PSQL" -d "$TARGET_DB" -v ON_ERROR_STOP=1 -f "$DUMP_PATH"
+      ;;
+    dump|backup)
+      if [[ -z "$PG_RESTORE" ]]; then
+        echo "pg_restore not found; install postgresql client tools." >&2
+        exit 1
+      fi
+      echo "→ Restoring custom-format archive with pg_restore..."
+      "$PG_RESTORE" --verbose --no-owner --no-acl -d "$TARGET_DB" "$DUMP_PATH"
+      ;;
+    *)
+      echo "Unknown extension .$EXT — use .sql or custom .dump from pg_dump -Fc" >&2
+      exit 1
+      ;;
+  esac
+fi
 shopt -u nocasematch
 
 echo ""
