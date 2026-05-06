@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ChevronLeft, ExternalLink } from "lucide-react";
 import TeamLogo from "../../../components/TeamLogo";
 import MatchRosterList from "../../../components/MatchRosterList";
+import { API_BASE } from "@/app/lib/apiClient";
 
 export const revalidate = 0;
 
@@ -94,10 +95,10 @@ export default async function MatchPage({ params }: { params: Promise<{ id: stri
   if (!error) {
     try {
       const [matchRes, previewRes] = await Promise.all([
-        fetch(`http://localhost:8000/api/match/${numericId}`, {
+        fetch(`${API_BASE}/api/match/${numericId}`, {
           next: { revalidate: 30 },
         }),
-        fetch(`http://localhost:8000/api/v1/matches/${numericId}/preview`, {
+        fetch(`${API_BASE}/api/v1/matches/${numericId}/preview`, {
           next: { revalidate: 30 },
         }),
       ]);

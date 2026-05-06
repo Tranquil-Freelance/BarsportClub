@@ -9,6 +9,7 @@ import "../../../i18n/config";
 
 // Percorso corretto: esce da [id], esce da match, esce da serie-a, entra in components
 import MatchLineups from "../../../components/MatchLineups";
+import { API_BASE } from "@/app/lib/apiClient";
 
 // ─── INTERFACCE TYPESCRIPT RIGOROSE ─────────────────────────────────
 
@@ -90,7 +91,7 @@ export default function MatchDetailsPage() {
   useEffect(() => {
     if (!matchId) return;
     
-    fetch(`http://localhost:8000/api/matches/${matchId}/details`)
+    fetch(`${API_BASE}/api/matches/${matchId}/details`)
       .then(res => res.json())
       .then((json: ApiResponse) => { 
         setData(json); 

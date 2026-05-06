@@ -3,7 +3,10 @@
  * Uses native Next.js fetch API with automatic error handling.
  */
 
-const BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000') + '/api/v1';
+/** Base origin for backend (no path). Use for /api/... routes outside /api/v1. */
+export const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
+const BASE_URL = `${API_BASE}/api/v1`;
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 

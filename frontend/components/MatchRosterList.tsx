@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { API_BASE } from "@/app/lib/apiClient";
 
 /* ─── Types ──────────────────────────────────────────────────────────── */
 
@@ -204,7 +205,7 @@ export default function MatchRosterList({ matchId, data: directData }: MatchRost
     setLoading(true);
     setError(null);
 
-    fetch(`http://localhost:8000/api/v1/matches/${numericId}/lineup`)
+    fetch(`${API_BASE}/api/v1/matches/${numericId}/lineup`)
       .then((r) => {
         if (!r.ok) throw new Error(`HTTP ${r.status}`);
         return r.json();

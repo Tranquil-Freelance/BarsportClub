@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_BASE } from '@/app/lib/apiClient';
 
 export default function MatchLineups({ matchId, homeTeam, awayTeam }) {
   const [lineups, setLineups] = useState(null);
@@ -9,7 +10,7 @@ export default function MatchLineups({ matchId, homeTeam, awayTeam }) {
     const fetchLineups = async () => {
       try {
         // Chiamata con URL assoluto verso il server Python
-        const response = await fetch(`http://localhost:8000/api/v1/matches/${matchId}/lineups`);
+        const response = await fetch(`${API_BASE}/api/v1/matches/${matchId}/lineups`);
         
         if (!response.ok) {
           throw new Error(`Errore HTTP: ${response.status}`);
